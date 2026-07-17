@@ -139,7 +139,41 @@ One sentence in the methods suffices. Retain the chat log.
 
 ---
 
-## 7. Go deeper (the sourced versions of this page)
+## 7. Bad vs. good, side by side
+
+Three real cases from this workshop's dataset. Same question, same model, different
+prompt. The gap is not phrasing — it's how much of your own knowledge you put in.
+
+**Case 1 — a two-group comparison**
+
+| | Prompt | What comes back |
+|---|---|---|
+| Bad | *"Compare word count between my two groups."* | An independent-samples t-test on all 60 rows, controls and patients pooled with no mention of the ceiling effect. |
+| Good | *"Compare word count between my two groups. Note: the control group is at ceiling on the severity measure by design — flag if that limits what a group comparison on word count can tell me, and check the variance in each group before choosing a test."* | The model flags the ceiling issue unprompted, checks variance ratios, and recommends a test suited to unequal variance — or recommends restricting the comparison. |
+
+**Case 2 — repeated measures**
+
+| | Prompt | What comes back |
+|---|---|---|
+| Bad | *"I have 30 patients measured at 1 month and 12 months. Did their scores improve? Give me the R code."* | A paired test roughly half the time; an independent-samples test or unpaired `lm()` the other half — see §4 in `SCRIPT.md` for the live version of this failure. |
+| Good | *"I have 30 patients, each measured twice (1 month, 12 months post-stroke) — repeated measures, not independent observations. Fit a model that accounts for the within-person correlation and tell me why a plain two-sample test would be wrong here."* | A mixed-effects or paired approach on the first attempt, with the independence assumption named explicitly instead of surfaced only on follow-up. |
+
+**Case 3 — a multi-predictor model**
+
+| | Prompt | What comes back |
+|---|---|---|
+| Bad | *"Build a regression predicting severity from my language measures."* | A model with all predictors dumped in, no mention that two of them are collinear, no report of what happens to each one's p-value when the others are added. |
+| Good | *"Build a regression predicting severity from these language measures: [list]. Two of these (content-word ratio, word count) are likely correlated with each other. Report each predictor's p-value in the single-predictor model and in the full model side by side, so I can see if anything changes."* | The same fit, but with the vanishing-effect problem (§5 in `STATISTICS_GUARDRAILS.md`) visible in the output instead of buried in it. |
+
+**The pattern.** The AI has the statistical knowledge — it demonstrates that the moment
+you ask a follow-up (§3, §4 in `SCRIPT.md`). It does not spend that knowledge unless
+your prompt gives it a reason to. **A good prompt is not cleverer wording. It's your
+own domain and statistical knowledge, written into the request instead of left in your
+head.** The AI can write the code. It cannot supply the part of the question you didn't ask.
+
+---
+
+## 8. Go deeper (the sourced versions of this page)
 
 This page is the one-pager. When you're back on your real research and want the *why*, with
 citations, it's all in [`guardrails/`](guardrails/):

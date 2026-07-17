@@ -220,3 +220,11 @@ Stop talking. Let it sit for a second. Then: "Okay — questions."
 If a question or extra 5 minutes opens up, the content-word-ratio "vanishing p-value" trap
 (SCRIPT.md §5, trap two) is the best thing to add back — it's the one with no dramatic
 number, which surprises people the most.
+
+**Optional bonus beat, if §4-6 finish early:** PROMPTS.md §7 has three bad-vs-good prompt
+pairs on this exact dataset — same question, same model, one version has your statistical
+knowledge folded into the prompt and one doesn't. Read the "bad" prompt for Case 2 (repeated
+measures) live, run it, then read the "good" version and run that too, side by side. It's a
+fast, concrete way to land the closing line before you get there: a good prompt isn't
+cleverer wording, it's your own knowledge written into the request instead of left in your
+head.
