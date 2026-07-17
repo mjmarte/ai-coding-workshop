@@ -1,11 +1,11 @@
 # Data privacy: what you may and may not paste into a chatbot
 
-*The one rule in this workshop that, if you break it, can end a career and breach a
-patient's trust. Read it once, properly.*
+*A violation of this rule can constitute a HIPAA/IRB breach with career and legal
+consequences.*
 
-The workshop data is **synthetic** — nobody said those words, there is no protocol, no
-consent, no PHI. That is deliberate, and it is the whole reason you can spend the day
-pasting it into an AI. The moment you go back to your own data, everything changes.
+The workshop data is synthetic: no protocol, no consent process, and no PHI apply to it.
+This is deliberate — it is what makes pasting it into an AI tool safe during the workshop.
+The rules below apply the moment real data is involved.
 
 ---
 
@@ -20,25 +20,25 @@ does not need to see a single real value to write your analysis.
 
 ---
 
-## Why — the part people skip
+## Rationale
 
-When you type into a consumer chat tool (the free/personal tiers of ChatGPT, Claude,
-Gemini, Copilot), what you send **may be stored, retained, human-reviewed, or used to
-improve the model.** For ordinary text that's fine. For protected health information it is
-an **unauthorized disclosure** — a HIPAA and IRB violation — and it is **irreversible**:
-you cannot un-send a prompt, and deletion later does not undo the disclosure that already
-happened.
+Input to a consumer chat tool (the free/personal tiers of ChatGPT, Claude, Gemini,
+Copilot) may be stored, retained, reviewed by humans, or used to improve the model. For
+ordinary text this is inconsequential. For protected health information it constitutes an
+unauthorized disclosure — a HIPAA and IRB violation — and it is irreversible: a sent
+prompt cannot be recalled, and later deletion does not undo the disclosure.
 
-Consumer chat interfaces are **not covered by your institution's Business Associate
-Agreement (BAA)** unless someone has told you, *in writing*, that a specific deployment is.
-"We have an enterprise license" is not the same as "this tool is cleared for PHI." Ask your
-IT/compliance office which specific tools are approved, and get it in writing.
+Consumer chat interfaces are not covered by an institution's Business Associate Agreement
+(BAA) unless a specific deployment has been confirmed in writing. An enterprise license is
+not equivalent to PHI clearance. Confirm approved tools with IT/compliance in writing
+before use.
 
 ---
 
-## What actually counts as PHI (it's more than names)
+## What counts as PHI
 
-"De-identified" is a **legal definition, not a vibe.** Under the HIPAA Safe Harbor method
+"De-identified" is a legal definition, not an informal judgment. Under the HIPAA Safe
+Harbor method
 (45 CFR §164.514(b)), data is de-identified only when **all 18 identifier types** are
 removed *and* you have no actual knowledge the remainder could re-identify someone:
 
@@ -63,20 +63,20 @@ removed *and* you have no actual knowledge the remainder could re-identify someo
 17. Full-face photographs and comparable images
 18. Any other unique identifying number, characteristic, or code
 
-Two things researchers routinely miss:
+Two commonly overlooked points:
 
-- **A raw voice recording is biometric — it is PHI even with the name removed.** So is a
-  full-face photo. "I took out the name" does not de-identify a `.wav` file.
-- **Free-text clinical narrative re-identifies.** A picture-description transcript can name
-  a spouse, a hometown, an employer, a rare diagnosis. You cannot eyeball a paragraph and
-  declare it clean. This is exactly the kind of text this workshop is about — treat it with
-  suspicion.
+- **A raw voice recording is biometric and is PHI even with the name removed**, as is a
+  full-face photograph. Removing the name does not de-identify a `.wav` file.
+- **Free-text clinical narrative can re-identify.** A picture-description transcript may
+  name a spouse, a hometown, an employer, or a rare diagnosis. A paragraph cannot be
+  certified clean by visual inspection; treat transcript text — the material central to
+  this workshop — with the same caution.
 
 ---
 
-## The safe workflow: schema in, synthetic twin, code out
+## Workflow: schema in, synthetic twin, code out
 
-This is the pattern the whole workshop is built to teach. Use it on real data:
+Apply this pattern to real data:
 
 1. **Describe, don't paste.** Give the AI your column names, their types, and units, plus
    **one row of invented, plausible values** — never a real one. That is enough for it to
@@ -87,19 +87,19 @@ This is the pattern the whole workshop is built to teach. Use it on real data:
    > one fabricated example row: A001, aphasia, 64, 58.2, "the boy is uh reaching for the
    > cookie". Write R to…*
 
-2. **Build a synthetic twin.** Generate fake data shaped like the real thing and develop
-   against it. This workshop's `data/make_data.py` is a worked example; in practice, Python
-   `faker`/`numpy` or R `synthpop`/`simstudy` do it. Prototype and debug with the AI on the
-   synthetic twin.
+2. **Build a synthetic twin.** Generate fake data with the same structure as the real
+   data and develop against it. This workshop's `data/make_data.py` is a worked example;
+   in practice, Python `faker`/`numpy` or R `synthpop`/`simstudy` serve this purpose.
+   Prototype and debug with the AI on the synthetic twin.
 
 3. **Run the reviewed code on the real data locally, with no AI in the loop.** Once the
-   code is correct and you understand it, run it where the real data lives — your approved
-   environment — and never send the real values anywhere.
+   code is correct and understood, run it in the approved environment where the real data
+   resides, and do not transmit real values elsewhere.
 
-   *Caveat worth teaching: synthetic ≠ automatically safe. High-fidelity synthetic data can
-   leak information about the real people it was modeled on. Keep synthetic data
-   low-fidelity enough to be clearly non-real, and don't publish a synthetic set built from
-   sensitive data without thought.*
+   *Synthetic data is not automatically safe: high-fidelity synthetic data can leak
+   information about the real individuals it was modeled on. Keep synthetic data
+   low-fidelity enough to be clearly non-real, and do not publish a synthetic dataset
+   derived from sensitive data without review.*
 
 ---
 
@@ -115,11 +115,11 @@ This is the pattern the whole workshop is built to teach. Use it on real data:
 
 ---
 
-## Disclose your AI use
+## Disclosure of AI use
 
-Journals and reporting bodies now expect it. AI **cannot be an author** (it cannot be
-accountable), and you must **disclose** where and how you used it — see
-[REPRODUCIBILITY.md](REPRODUCIBILITY.md). Keep your chat logs; they are your provenance.
+Journals and reporting bodies expect disclosure. AI cannot be an author, since authorship
+requires accountability, and where AI was used it must be disclosed — see
+[REPRODUCIBILITY.md](REPRODUCIBILITY.md). Retain chat logs as a provenance record.
 
 ---
 

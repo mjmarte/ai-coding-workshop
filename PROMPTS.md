@@ -1,12 +1,12 @@
 # The cheat sheet
 
-Print this. Keep it. Everything else in the workshop is practice for what's on this page.
+Print this and keep it. The rest of the workshop is practice applying what's on this page.
 
 ---
 
 ## 1. The recipe for a prompt that works
 
-A bad prompt is a wish. A good prompt is a **brief**. Five parts:
+An effective prompt functions as a brief, not a request. It has five parts:
 
 | Part | What it does | Example |
 |---|---|---|
@@ -16,8 +16,8 @@ A bad prompt is a wish. A good prompt is a **brief**. Five parts:
 | **The constraints** | Keeps it in your world | *"Use dplyr, not base R. Don't install anything new."* |
 | **The output you want** | Stops the essay | *"Just the code with short comments. No explanation."* |
 
-Paste in your **actual column names**. Every hallucinated variable name traces
-back to an AI guessing at a structure you never showed it.
+Paste in your **actual column names**. Hallucinated variable names arise from the
+model guessing at a structure you never showed it.
 
 **Template:**
 
@@ -38,7 +38,8 @@ Give me just the code with short comments.
 
 ## 2. The debugging loop
 
-This is 80% of using these tools. It is not a failure state. It is the normal state.
+This accounts for roughly 80% of working with these tools. It is the normal
+mode of use, not a sign that something has gone wrong.
 
 ```
 Here is my code:
@@ -52,64 +53,68 @@ I'm running [R 4.4 / Python 3.11] with [package versions if you know them].
 What is wrong and how do I fix it?
 ```
 
-- **Paste the whole error.** Not your summary of it. The line numbers matter.
-- **One error at a time.** Fix, re-run, repeat.
-- **Three strikes rule:** if it fails three times on the same error, it is stuck in a
-  groove. Start a *new chat*, describe the goal from scratch, and don't paste the
-  failed attempts. Fresh context beats more argument.
+- **Paste the whole error**, not a summary — line numbers and traceback detail matter.
+- **Address one error at a time.** Fix, re-run, repeat.
+- **Three-strikes rule:** if the same error persists after three attempts, the model
+  is likely stuck on a fixed (incorrect) diagnosis. Start a *new chat*, restate the
+  goal from scratch, and omit the failed attempts — fresh context outperforms continued
+  argument.
 
 ---
 
-## 3. Prompts that catch it lying to you
+## 3. Prompts that surface errors the model won't volunteer
 
-The whole workshop is really about this section.
+This section is the central practical content of the workshop.
 
 | Say this | Because |
 |---|---|
-| *"What is this code assuming about my data?"* | Surfaces the assumptions it silently made |
-| *"What would make this analysis wrong?"* | It knows. It just doesn't volunteer. |
-| *"Is this the right test? What is it assuming, and does my design meet it?"* | Catches t-tests on repeated measures |
-| *"Explain what line 7 does, as if to someone who's never coded."* | If you can't follow the explanation, don't run the code |
-| *"You used a package I don't recognise. Is `[name]` real, and is it on CRAN/PyPI?"* | Hallucinated packages are extremely common |
-| *"Rewrite this so a reviewer could reproduce it exactly."* | Forces seeds, versions, explicit steps |
-| *"Give me two different ways to do this and tell me the trade-offs."* | Breaks it out of the first plausible answer |
+| *"What is this code assuming about my data?"* | Surfaces assumptions made silently |
+| *"What would make this analysis wrong?"* | The model can identify failure modes but does not raise them unprompted |
+| *"Is this the right test? What is it assuming, and does my design meet it?"* | Catches t-tests applied to repeated measures |
+| *"Explain what line 7 does, as if to someone who's never coded."* | If the explanation doesn't hold up, the code shouldn't run |
+| *"You used a package I don't recognise. Is `[name]` real, and is it on CRAN/PyPI?"* | Hallucinated packages are common |
+| *"Rewrite this so a reviewer could reproduce it exactly."* | Forces explicit seeds, versions, and steps |
+| *"Give me two different ways to do this and tell me the trade-offs."* | Avoids anchoring on the first plausible answer |
 
 ---
 
-## 4. The five things it gets wrong, in order of how often
+## 4. The five most common failure modes, by frequency
 
-1. **Hallucinated functions and packages.** Confidently calls `tidystats::auto_model()`.
-   No such thing. → *Does this package exist? Show me the docs.*
-2. **The wrong test for your design.** Repeated measures fed to an independent-samples
-   test. It does not know your design unless you tell it. → **Tell it your design.**
-3. **Silent scope errors.** It models everyone when you meant a subgroup, drops NAs
-   without saying so, or filters a row set you didn't intend.
-   → *Print `nrow()` before and after every filter.*
-4. **Made-up numbers in prose.** Ask for a Results paragraph and it will produce
-   beautiful APA prose containing a df, an F, and an R² that appear nowhere in your
-   output. → **Check every number against the model object. Every time.**
-5. **Plausible-but-wrong statistics.** p = .07 described as "significant". A negative
-   coefficient described as a positive effect. → **Read the output yourself.**
+1. **Hallucinated functions and packages.** The model calls a nonexistent function,
+   e.g. `tidystats::auto_model()`, with full confidence. → *Does this package exist?
+   Show me the docs.*
+2. **The wrong test for the design.** Repeated measures fed to an independent-samples
+   test. The model does not know your design unless told. → **State your design
+   explicitly.**
+3. **Silent scope errors.** The model fits a model on the full sample when a subgroup
+   was intended, drops NAs without reporting it, or filters a different row set than
+   specified. → *Print `nrow()` before and after every filter.*
+4. **Fabricated numbers in prose.** A requested Results paragraph can contain a df,
+   an F, and an R² that appear nowhere in the actual output. → **Check every number
+   against the model object, every time.**
+5. **Plausible-but-wrong statistical interpretation.** p = .07 described as
+   "significant"; a negative coefficient described as a positive effect. → **Read
+   the output directly.**
 
 ---
 
 ## 5. The rules that don't bend
 
-**Never paste real patient data into a chatbot.** Not transcripts, not MRNs, not dates
-of birth, not "de-identified" text you haven't actually checked. Chat interfaces are not
-covered by your institution's BAA unless someone has told you in writing that they are.
-When you want AI help on real data: **share the schema, not the rows.** Column names,
-types, and a fabricated example row are enough to get working code.
+**Never paste real patient data into a chatbot.** This includes transcripts, MRNs,
+dates of birth, and "de-identified" text that hasn't been verified as such. Chat
+interfaces are not covered by your institution's BAA unless confirmed in writing.
+For AI help on real data: **share the schema, not the rows.** Column names, types,
+and a fabricated example row are sufficient to get working code.
 
-**Run it. Read it. Then trust it.** In that order. Code that runs without error can
-still be answering a different question than the one you asked.
+**Run it, read it, then trust it — in that order.** Code that runs without error
+can still answer a different question than the one asked.
 
-**If you can't explain it, you can't publish it.** Not a moral point, a practical one:
-you are the person who has to defend it at your committee, in review, and in your own
-head at 2am.
+**If you can't explain it, you can't publish it.** This is a practical constraint,
+not a moral one: you are the person who defends the analysis at committee, in
+review, and afterward.
 
-**Say what you did.** Journals increasingly require disclosure of AI use in analysis.
-One sentence in the methods. Keep the chat log.
+**Disclose AI use.** Journals increasingly require disclosure of AI use in analysis.
+One sentence in the methods suffices. Retain the chat log.
 
 ---
 

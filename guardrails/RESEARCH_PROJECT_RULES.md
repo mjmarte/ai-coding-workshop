@@ -1,8 +1,7 @@
 # A rules file for your own research project
 
-*This is the 10x move. Everything else in this workshop teaches **you** to catch the AI.
-This teaches the **AI** to catch itself — by giving it standing instructions it reads before
-every answer.*
+*A project rules file gives the AI standing instructions it reads before every response,
+shifting some of the self-checking burden onto the tool itself.*
 
 Modern AI coding tools read a project rules file automatically:
 
@@ -13,10 +12,11 @@ Modern AI coding tools read a project rules file automatically:
   analysis chat, then work below it. (Or save it as a Claude Project / Custom GPT
   instruction so it applies every time.)
 
-**Keep it short.** Anthropic's own test for every line: *"Would removing this cause the AI
-to make a mistake? If not, cut it."* A bloated rules file gets ignored. The template below
-is deliberately lean and research-specific — it says the things a general model does **not**
-already know about your work. Adapt the bracketed parts and delete what doesn't apply.
+**Keep it short.** Anthropic's stated test for each line: would removing this cause the AI
+to make a mistake? If not, cut it. An overlong rules file tends to be ignored. The
+template below is deliberately lean and research-specific, stating only what a general
+model would not already know about the work. Adapt the bracketed parts and delete what
+does not apply.
 
 ---
 
@@ -72,19 +72,20 @@ response. When a rule conflicts with what I asked, follow the rule and tell me w
 
 ---
 
-### Why each block is here (so you can adapt it, not just paste it)
+### Rationale for each block
 
-- **"About this project" / never invent columns** — hallucinated column names are the #1
-  source of code that runs on imaginary data. Pinning the schema kills it at the source.
-- **"print the row count before and after"** — makes silent scope errors (the model fits on
-  47 of your 60 rows) visible instead of invisible.
+- **"About this project" / never invent columns** — hallucinated column names are a
+  leading source of code that runs correctly on data that does not exist. Pinning the
+  schema addresses this at the source.
+- **"print the row count before and after"** — makes silent scope errors (a model fit on
+  47 of 60 rows) visible rather than invisible.
 - **"Never state a statistic in prose"** — pre-empts the fabricated-Results-paragraph
-  failure directly: you can't be handed an invented p-value if the AI is instructed to only
-  ever print real ones.
-- **The statistics block** is your [STATISTICS_GUARDRAILS.md](STATISTICS_GUARDRAILS.md),
-  compressed into instructions the AI acts on before you even have to catch it.
-- **The privacy rule** turns the assistant into a second set of eyes on the mistake that
-  ends careers.
+  failure: an invented p-value cannot be handed over if the AI is instructed to print only
+  real ones.
+- **The statistics block** compresses [STATISTICS_GUARDRAILS.md](STATISTICS_GUARDRAILS.md)
+  into instructions the AI applies before the error needs to be caught downstream.
+- **The privacy rule** gives the assistant a role in preventing a career-ending data
+  disclosure.
 
-A rules file is not a substitute for the [review rubric](ANALYSIS_REVIEW_RUBRIC.md) — it
-makes the AI's first draft better; you still verify the result. Belt **and** braces.
+A rules file does not substitute for the [review rubric](ANALYSIS_REVIEW_RUBRIC.md); it
+improves the AI's first draft, but the result still requires verification.

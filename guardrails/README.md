@@ -1,12 +1,11 @@
 # Guardrails
 
-*The durable artifact of this workshop. The notebooks teach you the moves for one
-afternoon; these files are what you keep and use on your real research for the next six
-months.*
+*Reference documents intended for continued use after the workshop, on real research
+projects.*
 
-Every claim in here is sourced to the primary literature or to official vendor
-documentation, cited inline. They are written for a neuro/rehab researcher who is a beginner
-programmer, not for an engineer.
+Every claim is sourced to the primary literature or to official vendor documentation,
+cited inline, and written for a neuro/rehab researcher who is a beginner programmer, not
+for an engineer.
 
 | File | What it's for | Read it when |
 |---|---|---|
@@ -19,17 +18,16 @@ programmer, not for an engineer.
 
 ---
 
-## If you read only three things
+## Priority reading
 
-1. **[DATA_PRIVACY.md](DATA_PRIVACY.md)** — because the mistake it prevents is
-   unrecoverable.
-2. **[STATISTICS_GUARDRAILS.md](STATISTICS_GUARDRAILS.md)** — because these are the errors
-   that run cleanly and publish wrong.
-3. **[ANALYSIS_REVIEW_RUBRIC.md](ANALYSIS_REVIEW_RUBRIC.md)** — because a checklist beats
-   good intentions at 2am.
+1. **[DATA_PRIVACY.md](DATA_PRIVACY.md)** — the error it prevents is unrecoverable.
+2. **[STATISTICS_GUARDRAILS.md](STATISTICS_GUARDRAILS.md)** — these errors run without
+   crashing and publish wrong.
+3. **[ANALYSIS_REVIEW_RUBRIC.md](ANALYSIS_REVIEW_RUBRIC.md)** — a checklist to run before
+   trusting any output.
 
-## The whole thing in one sentence
+## Summary
 
-> The bottleneck in research computing was never typing — it was knowing what to type. AI
-> removes the typing. It does not remove the knowing; it just makes it possible to skip the
-> knowing without noticing that you did. **These files are how you keep noticing.**
+AI removes the burden of typing code but not the requirement of knowing what the code
+should do. It is possible to skip that knowledge without noticing. These documents are
+the check against that.

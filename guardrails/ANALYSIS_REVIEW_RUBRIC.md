@@ -1,7 +1,7 @@
 # The analysis review rubric
 
-*Print this. Run any AI-generated analysis through it before a single number leaves your
-screen. It takes five minutes and it is the difference between a tool and a liability.*
+*Run any AI-generated analysis through this checklist before reporting a number. It takes
+approximately five minutes.*
 
 Score each item **✓ (pass)**, **✗ (fail)**, or **? (can't tell yet)**. A single **✗** in a
 GATE section means **stop** — fix it before anything else. A **?** is a task, not a pass.
@@ -39,7 +39,8 @@ GATE section means **stop** — fix it before anything else. A **?** is a task, 
 - [ ] No function was invented. If I don't recognize one, I asked *"is `[name]` real, show
       me the docs."*
 
-*~5–22% of AI-suggested packages don't exist. Blind-installing one is how malware gets in.*
+*5–22% of AI-suggested packages do not exist; installing one without verification is a
+known malware vector.*
 
 ---
 
@@ -74,8 +75,8 @@ GATE section means **stop** — fix it before anything else. A **?** is a task, 
 - [ ] No **p = .07 called "significant"**, no "trend toward significance," no significance
       claimed for a predictor with p > .05.
 
-*The AI writes a better Results paragraph than you would — and puts an invented df in it.
-Both are true.*
+*An AI-written Results paragraph can be well-composed and contain an invented df in the
+same sentence.*
 
 ---
 
@@ -94,21 +95,21 @@ Both are true.*
 
 | Result | Meaning |
 |---|---|
-| All GATES ✓, Sections mostly ✓ | Trust it — you supervised it properly. |
-| Any GATE ✗ | **Stop.** Fix the gate before continuing. |
-| Section B has a ✗ | Your statistics are wrong even though the code ran. This is the dangerous case — nothing errored. |
-| Any ? | Not done. A "?" is a question you owe yourself an answer to. |
+| All GATES ✓, Sections mostly ✓ | The analysis has been adequately supervised. |
+| Any GATE ✗ | Stop. Fix the gate before continuing. |
+| Section B has a ✗ | The statistics are wrong despite the code running without error — the most dangerous case, since nothing signals the failure. |
+| Any ? | Not done. Resolve the open question. |
 
 ---
 
-### The 30-second version, if you only remember one row from each section
+### Minimum checklist, one line per section
 
 1. **Privacy:** schema, not rows.
-2. **Runs:** on *my* data, with `n` printed around every filter.
-3. **Packages:** real, checked before install.
-4. **Stats:** right unit of analysis for my design.
+2. **Runs:** on the actual data, with `n` printed around every filter.
+3. **Packages:** verified real, checked before install.
+4. **Stats:** correct unit of analysis for the design.
 5. **Numbers:** every one traced back to the output.
-6. **Explain:** if I can't explain it, I can't publish it.
+6. **Explain:** if it cannot be explained, it cannot be published.
 
-> Code that runs without error can still be answering a different question than the one you
-> asked. **Run it. Read it. Then trust it — in that order.**
+> Code that runs without error can still answer a different question than the one asked.
+> Run it. Read it. Then trust it — in that order.

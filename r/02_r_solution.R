@@ -1,8 +1,8 @@
 # =============================================================================
 # PART 2 — R: statistical modelling + ggplot        [ SOLUTION / REFERENCE ]
 #
-# This is what working code looks like. Attendees should NOT open this until
-# they've tried the prompt themselves. It exists so nobody gets stranded.
+# Reference implementation. Attendees should attempt each prompt themselves
+# before consulting this file; it exists as a fallback, not a starting point.
 # =============================================================================
 
 library(readr)
@@ -15,7 +15,7 @@ library(tidyr)
 stopifnot(dir.exists("data"))
 
 
-# ---- 1. Load and look ------------------------------------------------------
+# ---- 1. Load and inspect ----------------------------------------------------
 transcripts <- read_csv("data/transcripts.csv", show_col_types = FALSE)
 features    <- read_csv("data/features.csv",    show_col_types = FALSE)
 
@@ -63,7 +63,7 @@ tidy(m1, conf.int = TRUE) |>
 
 glance(m1) |> select(r.squared, adj.r.squared, statistic, p.value, df, nobs) |> print()
 
-# Assumption checks — LOOK at these, don't just run them
+# Assumption checks — inspect these plots, do not just execute the call
 par(mfrow = c(2, 2)); plot(m1); par(mfrow = c(1, 1))
 
 # Multicollinearity: n_words and type_token_ratio are not independent.

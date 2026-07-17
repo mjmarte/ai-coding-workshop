@@ -15,10 +15,10 @@ def code(t): return {"cell_type": "code", "metadata": {}, "execution_count": Non
 
 SETUP = f'''
 # =====================================================================
-#  RUN ME FIRST.  Takes ~30 seconds. Wait for the "Ready." line below.
+#  RUN FIRST. Takes ~30 seconds. Wait for the "Ready." line below.
 # =====================================================================
-# You do not need to understand this cell. Click the play button on the
-# left (or press Shift+Enter) and wait. If it prints "Ready." you are set.
+# Understanding this cell is not required. Click the play button on the
+# left (or press Shift+Enter) and wait. "Ready." confirms setup is complete.
 import os, sys, subprocess
 
 REPO = "{REPO}"   # facilitator fills this in before the workshop
@@ -28,8 +28,8 @@ if not os.path.exists("ai-coding-workshop") and not os.path.exists("data"):
     r = subprocess.run(["git", "clone", "-q", f"https://github.com/{{REPO}}.git"])
     if r.returncode != 0:
         raise SystemExit(
-            "Could not download the workshop files. This is almost always a wrong "
-            "GitHub link — tell the facilitator. (Nothing you did is wrong.)")
+            "Could not download the workshop files. This is almost always an "
+            "incorrect GitHub link — tell the facilitator.")
 if os.path.isdir("ai-coding-workshop"):
     os.chdir("ai-coding-workshop")
 
@@ -37,12 +37,12 @@ if os.path.isdir("ai-coding-workshop"):
 subprocess.run([sys.executable, "-m", "spacy", "download", "en_core_web_sm", "-q"])
 os.makedirs("outputs", exist_ok=True)
 
-# 3. Confirm the data is actually here before you go further
+# 3. Confirm the data is present before proceeding
 missing = [f for f in ("data/transcripts.csv", "data/features.csv")
            if not os.path.exists(f)]
 if missing:
     raise SystemExit(f"Setup incomplete — missing {{missing}}. Ask the facilitator.")
-print("Ready. You're all set. Data files:", os.listdir("data"))
+print("Ready. Data files:", os.listdir("data"))
 '''
 
 # (title, goal_md, prompt, solution_code, checkpoint)
@@ -50,9 +50,9 @@ TASKS = [
     (
         "Task 1 — Open the data and look at it",
         """
-**Goal:** load the CSV, see how big it is, and find out how many people are in each group.
+**Goal:** load the CSV, check its dimensions, and count participants per group.
 
-Never model data you haven't looked at. This is step one of every analysis, forever.
+Never model data you haven't looked at. This is step one of every analysis.
 """,
         f"""I'm a researcher using Python in a Google Colab notebook. I am a beginner.
 
@@ -82,14 +82,14 @@ print("rows, columns:", df.shape)
 print(df["group"].value_counts())
 df.head(3)
 ''',
-        "You should see **60 rows, 8 columns** and 30 people per group.",
+        "Expected: **60 rows, 8 columns**, 30 participants per group.",
     ),
     (
         "Task 2 — Read some actual transcripts",
         """
 **Goal:** print one control transcript and one transcript from the most impaired participant.
 
-You are about to build measures of *language*. Look at the language first.
+Before building measures of *language*, read the language itself.
 """,
         """Using the same `df`, print the transcript of one control participant, and the
 transcript of the participant with aphasia who has the LOWEST wab_aq score.
@@ -101,8 +101,8 @@ print(df.query("group == 'control'")["transcript"].iloc[0])
 print("\\n--- APHASIA (most impaired) ---")
 print(df.query("group == 'aphasia'").sort_values("wab_aq")["transcript"].iloc[0])
 ''',
-        "Read them. Notice the fillers, the repeated words, the vague nouns. "
-        "Those are the things you're about to count.",
+        "Note the fillers, repeated words, and vague nouns — these are what "
+        "the next task quantifies.",
     ),
     (
         "Task 3 — Your first NLP measures (no fancy library needed)",
@@ -110,8 +110,8 @@ print(df.query("group == 'aphasia'").sort_values("wab_aq")["transcript"].iloc[0]
 **Goal:** for every transcript compute: number of words, number of unique words,
 type-token ratio (unique / total), and mean word length.
 
-Point to notice: this is "NLP" and it is four lines of arithmetic. Most useful
-research NLP is like this. Save the heavy machinery for when you actually need it.
+These four measures are arithmetic, not machine learning — much of useful
+research NLP is. Reserve heavier tools for when they're actually needed.
 """,
         """Add four new columns to `df`, one row per participant, computed from the `transcript` column:
 
@@ -136,16 +136,16 @@ def simple_features(text):
 df = df.join(df["transcript"].apply(simple_features))
 df[["participant_id", "group", "wab_aq", "n_words", "type_token_ratio"]].head()
 ''',
-        "Controls should average around 110 words; the aphasia group around 70.",
+        "Controls should average around 110 words; the aphasia group, around 70.",
     ),
     (
         "Task 4 — Part-of-speech tagging with spaCy",
         """
-**Goal:** count what *kind* of words people used — content words (nouns, verbs,
-adjectives, adverbs) versus fillers ("uh", "um", "well").
+**Goal:** classify words by type — content words (nouns, verbs, adjectives,
+adverbs) versus fillers ("uh", "um", "well").
 
-This is the first measure that needs a real NLP library. `content_word_ratio` is a
-standard measure of how informative someone's speech is.
+This is the first measure requiring a proper NLP library. `content_word_ratio`
+is a standard index of speech informativeness.
 """,
         """Now use spaCy (the `en_core_web_sm` model, already downloaded) to add two more
 columns to `df`:
@@ -178,8 +178,8 @@ def pos_features(text):
 df = df.join(df["transcript"].apply(pos_features))
 df.groupby("group")[["content_word_ratio", "filler_rate"]].mean().round(3)
 ''',
-        "Controls ≈ 0.41 content-word ratio and near-zero fillers. "
-        "Aphasia ≈ 0.39 content and a much higher filler rate.",
+        "Controls: content-word ratio ≈ 0.41, near-zero fillers. "
+        "Aphasia: content ≈ 0.39, filler rate substantially higher.",
     ),
     (
         "Task 5 — Plot it",
@@ -187,7 +187,7 @@ df.groupby("group")[["content_word_ratio", "filler_rate"]].mean().round(3)
 **Goal:** three side-by-side boxplots comparing the groups on words produced,
 content-word ratio, and filler rate.
 
-This is where the AI earns its keep. Nobody remembers matplotlib syntax.
+A good task for AI assistance — matplotlib syntax is rarely worth memorizing.
 """,
         """Make one matplotlib figure with three side-by-side boxplots comparing the "control"
 and "aphasia" groups on: n_words, content_word_ratio, and filler_rate.
@@ -226,17 +226,17 @@ fig.tight_layout()
 fig.savefig("outputs/python_figure.png", dpi=150)
 plt.show()
 ''',
-        "If the first attempt is ugly, don't fix it by hand — tell the AI what's ugly "
-        "and ask again. That iteration *is* the skill.",
+        "If the first attempt is ugly, don't fix it by hand — describe the problem "
+        "to the AI and ask again. That iteration is the skill being practiced.",
     ),
     (
         "Task 6 — Which measure actually tracks severity?",
         """
 **Goal:** correlate every measure with WAB-AQ, **within the aphasia group only**.
 
-Why only the aphasia group? Because controls are all pinned at ~99 on the WAB. Pooling
-them would manufacture a correlation out of the group difference. The AI will not warn
-you about this. You have to know it.
+Controls sit near ceiling (~99) on the WAB. Pooling groups would manufacture a
+correlation out of the group difference rather than a real severity relationship.
+An AI assistant will not flag this — the analyst has to.
 """,
         """Within the aphasia group only, compute the correlation between wab_aq and each of
 these five measures: n_words, type_token_ratio, mean_word_length, content_word_ratio,
@@ -251,16 +251,16 @@ print("Correlation with WAB-AQ, aphasia group only:")
 print(corrs)
 ''',
         "`filler_rate` should come out around **-0.83** and `n_words` around **+0.60**. "
-        "Note that `type_token_ratio` is nearly flat — hold that thought, it comes back in R.",
+        "`type_token_ratio` is nearly flat — this returns in the R portion.",
     ),
     (
         "Task 7 (stretch) — Semantic similarity to a reference description",
         """
-**Goal:** score how much each transcript resembles a "complete" description of the
-picture. This is a crude version of a semantic relevance / idea-density measure.
+**Goal:** score how closely each transcript resembles a "complete" description of the
+picture — a coarse proxy for semantic relevance / idea density.
 
-We use TF-IDF + cosine similarity: fast, no downloads, and the concept (turn text into
-a vector, compare vectors) is exactly the one behind modern embeddings.
+TF-IDF + cosine similarity requires no downloads and rests on the same principle
+(text as vector, compare vectors) that underlies modern embeddings.
 """,
         """I want a measure of how semantically close each transcript is to a complete
 description of the scene.
@@ -295,16 +295,16 @@ print(df.groupby("group")["semantic_similarity"].mean().round(3))
 aph = df.query("group == 'aphasia'")
 print("r with WAB-AQ:", round(aph["semantic_similarity"].corr(aph["wab_aq"]), 2))
 ''',
-        "Controls ≈ 0.50, aphasia ≈ 0.24, and r ≈ **+0.82** with WAB-AQ. "
-        "That is a strong measure — and you built it in six lines.",
+        "Controls ≈ 0.50, aphasia ≈ 0.24, and r ≈ **+0.82** with WAB-AQ — "
+        "a strong measure from roughly six lines of code.",
     ),
     (
         "Task 8 (stretch) — Can we classify group from language alone?",
         """
 **Goal:** a cross-validated logistic regression predicting group from the five measures.
 
-Also: the moment to learn that an AI will happily hand you a model with **no
-cross-validation** and a suspiciously perfect accuracy, and say nothing about it.
+An AI assistant will readily produce a model with **no cross-validation** and a
+suspiciously high accuracy, without flagging the omission.
 """,
         """Fit a logistic regression that predicts `group` (aphasia = 1, control = 0) from these
 five features: n_words, type_token_ratio, mean_word_length, content_word_ratio, filler_rate.
@@ -330,16 +330,15 @@ print(f"5-fold CV accuracy: {scores.mean():.2f} (+/- {scores.std():.2f})")
 print("Chance level:", round(max(y.mean(), 1 - y.mean()), 2))
 ''',
         "About **0.88** against a chance level of 0.50. "
-        "Now go back and ask the AI: *'what could make this accuracy misleadingly high?'* "
-        "It gives a good answer — but only because you asked.",
+        "Ask the AI: *'what could make this accuracy misleadingly high?'* "
+        "It gives a good answer — but only when prompted.",
     ),
     (
         "Task 9 — Hand off to R",
         """
-**Goal:** write your features out to a CSV so the R half of the workshop can model them.
+**Goal:** write the feature set to a CSV so the R half of the workshop can model it.
 
-This is the real research pattern: Python for text, R for statistics. Nobody makes you
-pick a side.
+A common research pattern: Python for text processing, R for statistics.
 """,
         """Save participant_id plus the five feature columns and semantic_similarity to
 `outputs/my_features.csv` (no index column). Print the first few rows to confirm.""",
@@ -348,8 +347,8 @@ out = df[["participant_id"] + feature_cols + ["semantic_similarity"]]
 out.to_csv("outputs/my_features.csv", index=False)
 print(out.head())
 ''',
-        "The repo already ships `data/features.csv` with the same measures, so the R half "
-        "works even if you didn't finish this one. Compare them — do your numbers match?",
+        "`data/features.csv` already ships with the same measures, so the R half "
+        "works even if this task wasn't finished. Compare the two files for agreement.",
     ),
 ]
 
@@ -358,24 +357,24 @@ HEADER_STARTER = f'''
 
 ### How this notebook works
 
-You will not type much Python today. For each task you get:
+Minimal Python typing is required. For each task:
 
-1. **A goal** — what you're trying to produce
+1. **A goal** — the target output
 2. **A prompt** — copy it into your AI assistant (Claude, ChatGPT, or Colab's built-in Gemini)
-3. **An empty cell** — paste the code it gives you, run it, see if it works
-4. **A checkpoint** — what the right answer looks like, so you know if you got it
+3. **An empty cell** — paste the code it returns, run it, check the result
+4. **A checkpoint** — the expected output, for verification
 
-If the code errors: **copy the whole error message back to the AI** and say
-*"this is the error I got, fix it."* That loop is 80% of what using these tools is.
+On error: **copy the full error message back to the AI** and say
+*"this is the error I got, fix it."* That loop accounts for most of the workflow.
 
-The data is **synthetic** — generated by a script, not from real patients. Nothing you
-paste into a chatbot today is anyone's health information. That is deliberate.
+The data is **synthetic**, generated by a script, not drawn from real patients.
+Nothing entered into a chatbot today is protected health information.
 '''
 
 HEADER_SOLUTION = f'''
 # Part 1 — Python — SOLUTION / REFERENCE
 
-Working code for every task. Use it to get unstuck, not to skip the thinking.
+Working code for every task. Use it to get unstuck, not to bypass the exercise.
 '''
 
 
@@ -395,13 +394,12 @@ def build(starter: bool):
             cells.append(md(f"> {check}"))
     if starter:
         cells.append(md(
-            "---\n## Done with Python\n\nYou just built a discourse-analysis pipeline: "
-            "lexical measures, POS tagging, a semantic measure, a plot, and a classifier.\n\n"
-            "**Now switch to R** for the statistics — open `r/02_r_starter.R` in Posit Cloud.\n\n"
-            "The thing you *keep* from today is the `guardrails/` folder — the sourced rules, "
-            "the statistics rubric, the data-privacy guide, and a one-page review checklist "
-            "to run any AI analysis through before you trust a number. Read it when you go "
-            "back to your real data."))
+            "---\n## Done with Python\n\nThis pipeline covered: lexical measures, "
+            "POS tagging, a semantic measure, a plot, and a classifier.\n\n"
+            "**Continue to R** for the statistics — open `r/02_r_starter.R` in Posit Cloud.\n\n"
+            "Retain the `guardrails/` folder: the sourced rules, the statistics rubric, "
+            "the data-privacy guide, and a one-page review checklist for vetting any AI "
+            "analysis before trusting its numbers. Consult it when working with real data."))
     return {
         "cells": cells,
         "metadata": {

@@ -1,35 +1,36 @@
 # Statistics guardrails for neuro & rehab research
 
-*A field guide to the mistakes an AI assistant will make for you, cheerfully, without a warning.*
+*A reference to statistical errors an AI coding assistant will commit without flagging
+them.*
 
-An AI coding assistant runs the test you name. It does not know your **design** — that
-your 60 rows are 30 people measured twice, that your controls are pinned at ceiling, that
-you enrolled the most-impaired patients and they'll drift upward no matter what you do. It
-has read every paper describing these traps and will still walk you straight into them,
-because you asked for code, not for judgement.
+An AI coding assistant runs the test it is asked to run. It does not know the study
+design by default — that 60 rows may be 30 people measured twice, that controls may be at
+ceiling, that enrolling the most-impaired patients produces upward drift regardless of
+treatment. It has processed the literature describing these traps and will still produce
+code that falls into them, because the request was for code, not for judgment.
 
-This file is the judgement. Every trap below is documented in the literature, and most of
-them are **live in this workshop's own synthetic data** — the numbers in the examples are
-real, computed from `data/`. If you learn to catch these eleven, you have caught most of
-what damages a rehab-research paper.
+This document supplies that judgment. Every trap below is documented in the literature,
+and most are reproduced in this workshop's own synthetic data — the numbers in the
+examples are computed from `data/`, not illustrative. These eleven traps account for most
+of the damage done to rehab-research statistics.
 
 **How to read each entry:** what it is → how it shows up in neuro/rehab → *how the AI
 commits it* → **the catch** (a prompt + a manual check) → the fix → the source.
 
 ---
 
-## The one question under all of them
+## The underlying question
 
-> **What is my unit of analysis, and does every row in this model earn its place as
-> independent evidence?**
+> What is the unit of analysis, and does every row in this model constitute independent
+> evidence?
 
-Nearly every trap below is a violation of that one sentence. Print it above your desk.
+Nearly every trap below is a violation of this principle.
 
 ---
 
-## The master rubric — answer these BEFORE you trust any analysis
+## Master checklist — answer before trusting any analysis
 
-Copy this into your AI chat and make it answer, in order:
+Have the AI answer these, in order, before accepting an analysis:
 
 1. **Unit of analysis.** What is one independent observation — a patient, or a
    measurement? How many *independent* units do I actually have?
@@ -43,12 +44,12 @@ Copy this into your AI chat and make it answer, in order:
    `n`? (Print `n` before and after every filter.)
 6. **What would make this wrong?** Name the top three threats to this specific inference.
 
-The AI answers all of these well — *once you ask*. It volunteers none of them.
+The AI answers all of these well once asked. It volunteers none of them unprompted.
 
 ---
 
 ## 1. Pseudoreplication — treating repeated measures as independent
-**The single most important one for rehab data.**
+The most consequential of the eleven for rehab data.
 
 - **What it is.** Multiple observations from the same participant (two visits, twenty
   discourse samples, hundreds of trials) counted as independent, inflating your degrees of
@@ -60,10 +61,11 @@ The AI answers all of these well — *once you ask*. It volunteers none of them.
   right.
 - **The catch — this is live in `data/transcripts_long.csv`:**
   - Correct model: `lmer(wab_aq ~ timepoint + (1 | participant_id))` → chronic is
-    **+7.1 WAB points, t = 5.2**. A clear, real improvement.
-  - Naive model: `lm(wab_aq ~ timepoint)` → **p = .056**. "No significant improvement."
-  - **Same data. The wrong model didn't invent an effect — it *hid* one.** Throwing away
-    the pairing threw away the power to see it.
+    **+7.1 WAB points, t = 5.2**, a clear improvement.
+  - Naive model: `lm(wab_aq ~ timepoint)` → **p = .056**, read as "no significant
+    improvement."
+  - Same data: the naive model did not invent an effect, it hid one. Discarding the
+    pairing discarded the power to detect it.
   - Ask the AI: *"These are repeated measures — two visits per participant. Does this model
     account for the within-person correlation? What's my unit of analysis?"*
 - **The fix.** Linear mixed-effects models with a random intercept per participant (and a
@@ -78,7 +80,7 @@ The AI answers all of these well — *once you ask*. It volunteers none of them.
 ---
 
 ## 2. The interaction fallacy — "significant" vs "not significant" is not a comparison
-**How almost everyone accidentally claims a treatment worked.**
+A common route to an unsupported claim that treatment worked.
 
 - **What it is.** Concluding two effects *differ* because one is significant and the other
   isn't — without testing the difference (the interaction) directly.
@@ -103,7 +105,7 @@ The AI answers all of these well — *once you ask*. It volunteers none of them.
 ---
 
 ## 3. Ceiling/floor effects — pooling manufactures correlations out of thin air
-**Live in this workshop's data.**
+Reproduced in this workshop's data.
 
 - **What it is.** Correlating a measure across a pooled sample when one group sits at
   ceiling (no variance) and the other is spread out. The "correlation" is really the
@@ -116,10 +118,10 @@ The AI answers all of these well — *once you ask*. It volunteers none of them.
 - **The catch — real numbers from `data/`:**
   - `n_words` vs `wab_aq`, **aphasia group only: R² = .36**.
   - Same relationship, **all 60 pooled: R² = .70**.
-  - Half your "explained variance" is just group membership. **Only you know the controls
-    are at ceiling.** Ask: *"Are any of my groups at a ceiling or floor on the outcome? If
-    so, is this correlation real or an artifact of pooling?"* And always **plot it** — two
-    clouds joined by a line is the signature.
+  - Half of the apparent explained variance is group membership. The AI has no way to
+    know the controls are at ceiling unless told. Ask: *"Are any of my groups at a ceiling
+    or floor on the outcome? If so, is this correlation real or an artifact of pooling?"*
+    Always plot the data — two clouds joined by a line is the signature of this artifact.
 - **The fix.** Model *within* the group that has variance (here, aphasia only), or test the
   group difference explicitly instead of dressing it as a continuous relationship.
 - **Source.** Makin & Orban de Xivry (2019), *Ten common statistical mistakes*, **eLife
@@ -129,8 +131,8 @@ The AI answers all of these well — *once you ask*. It volunteers none of them.
 
 ---
 
-## 4. Regression to the mean — the rehab-specific ghost
-**Not in most "common mistakes" lists. Belongs at the top of yours.**
+## 4. Regression to the mean — the rehab-specific case
+Absent from most generic "common mistakes" lists, but central to rehab research design.
 
 - **What it is.** Enroll patients *because* they scored extreme at baseline, and they'll
   drift toward the mean at retest — through measurement noise alone, with no treatment and
@@ -208,10 +210,10 @@ The AI answers all of these well — *once you ask*. It volunteers none of them.
 - **In rehab.** "Try it with and without the outlier / with age as a covariate / on the
   subtest that moved." Each fork is defensible; the *set* of forks is a hidden
   multiple-comparisons problem.
-- **How the AI commits it — and why it's worse with AI.** It costs nothing to ask a chatbot
-  "try another model that makes this significant," and it will. That is p-hacking with a
-  friendly interface. **The tool that lowers the cost of analysis raises the cost of
-  discipline.**
+- **How the AI commits it, and why the risk is elevated with AI.** Asking a chatbot to
+  "try another model that makes this significant" costs nothing and will be complied with;
+  this is p-hacking with a conversational interface. Lowering the cost of running an
+  analysis raises the importance of pre-specified discipline.
 - **The catch.** Decide your analysis *before* you see the result. Ask: *"If I'd made
   slightly different but equally reasonable choices here, would the conclusion hold?"*
   Report every measure, exclusion, and model you tried.
@@ -241,7 +243,8 @@ The AI answers all of these well — *once you ask*. It volunteers none of them.
 ---
 
 ## 10. Confounded measures — lexical diversity depends on sample length
-**A 40-year-old known problem, live in this workshop's data, and the AI won't mention it.**
+A problem documented since Richards (1987), reproduced in this workshop's data, and not
+flagged by the AI unless asked.
 
 - **What it is.** Type-Token Ratio (unique words ÷ total words) falls mechanically as a
   language sample gets longer — more words means more repetition. So TTR is confounded with
@@ -251,8 +254,8 @@ The AI answers all of these well — *once you ask*. It volunteers none of them.
   Any TTR group difference may be a length difference in disguise.
 - **The catch — real numbers from `data/`:** within the aphasia group, `r(TTR, n_words) =
   −0.41`, and patients average 68 words vs controls' 110. Ask the AI: *"Is this measure
-  confounded with sample length? What's the standard fix in my field?"* It gives a good
-  answer — **only because you asked.**
+  confounded with sample length? What's the standard fix in my field?"* It answers
+  correctly, but only when asked.
 - **The fix.** Standardize token count before computing; or use length-robust measures —
   **MATTR** (moving-average TTR), **vocd-D**, or **MTLD**.
 - **Source.** Richards (1987), *Type/token ratios: what do they really tell us?*, **Journal
@@ -273,29 +276,29 @@ The AI answers all of these well — *once you ask*. It volunteers none of them.
 
 ---
 
-## Reporting hygiene (do this every time)
+## Reporting standards
 
-- **Report effect sizes and confidence intervals, not just p-values.** A p-value is not the
-  probability your hypothesis is true, is not an effect size, and is not a yes/no gate.
+- **Report effect sizes and confidence intervals, not just p-values.** A p-value is not
+  the probability the hypothesis is true, is not an effect size, and is not a binary gate.
   *Source: Wasserstein & Lazar (2016), the ASA Statement on p-values, **The American
   Statistician 70:129**.*
-- **p > .05 does not mean "no effect."** It means "not enough evidence, given this
-  (possibly underpowered) design." Never write "there was no difference" from a bare
-  non-significant p. Use CIs or equivalence tests if you want to argue *for* the null.
-- **"p = .07, a trend toward significance" is not a thing.** Neither is "p = .04, highly
-  significant." Report the number and the interval; let the reader judge.
-- **Never report a number you cannot point to in a model object.** (See the fact-check
-  exercise — the AI *will* write a beautiful Results paragraph containing an F, a df, and an
-  R² that appear nowhere in your output.)
-- **Follow the reporting checklist for your design.** **CONSORT** for randomized trials,
-  **STROBE** for observational studies (most aphasia-recovery datasets are STROBE),
-  **PRISMA** for systematic reviews. All at [equator-network.org](https://www.equator-network.org).
+- **p > .05 does not mean "no effect."** It means insufficient evidence given the design,
+  which may be underpowered. Do not write "there was no difference" from a bare
+  non-significant p; use CIs or equivalence tests to argue for the null.
+- **"A trend toward significance" (p = .07) is not a valid characterization**, nor is
+  "highly significant" (p = .04). Report the number and the interval and let the reader
+  judge.
+- **Never report a number that cannot be traced to a model object.** An AI-written Results
+  paragraph can contain an F, df, and R² that appear nowhere in the actual output.
+- **Follow the reporting checklist for the design.** CONSORT for randomized trials, STROBE
+  for observational studies (most aphasia-recovery datasets are STROBE), PRISMA for
+  systematic reviews. All at [equator-network.org](https://www.equator-network.org).
 
 ---
 
-## The pocket version — five prompts that catch most of it
+## Five prompts covering most cases
 
-Paste these into your AI chat, in this order, on any analysis:
+Use these, in order, on any analysis:
 
 1. *"What is my unit of analysis, and does this model treat any repeated measurements as
    independent when they aren't?"*

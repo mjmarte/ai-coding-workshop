@@ -1,55 +1,57 @@
 # Reproducibility: good-enough practices for AI-assisted research
 
-*You don't need a DevOps pipeline. You need your own result, re-run by you in six months,
-to come out the same. That's the bar. Everything here serves it.*
+*The bar is minimal but firm: the same analysis, re-run by the same researcher months
+later, must produce the same result.*
 
-The audience for every habit below is **future you** — the collaborator you'll care about
-most and treat the worst. AI makes it trivially easy to generate code you didn't write and
-can't rerun. These practices are what keep that from becoming a paper you can't defend.
+These practices are aimed at the researcher's own future use of the project. AI makes it
+easy to generate code that was never written or understood by the researcher, and
+correspondingly easy to lose the ability to rerun it. The practices below keep that from
+becoming an indefensible result.
 
-Start with the core. Grow into the rest.
+Start with the core five; add the rest as needed.
 
 ---
 
 ## The core five (do these from day one)
 
-1. **Keep raw data raw.** Save data exactly as it arrived and treat the file as
-   **read-only** — never open-and-save-over it, never hand-edit cells. All cleaning happens
-   in a script that reads `data/raw/` and writes somewhere else. If the raw data survives,
-   you can always recover; if you edit it in place, the mistake is permanent and invisible.
-   *(Strongest consensus in the entire literature: Wilson 2017; Noble 2009; Sandve 2013;
-   Data Carpentry.)*
+1. **Keep raw data raw.** Save data exactly as it arrived and treat the file as read-only:
+   never open-and-save-over it, never hand-edit cells. All cleaning happens in a script
+   that reads `data/raw/` and writes elsewhere. If the raw data is preserved, recovery is
+   always possible; edits in place make mistakes permanent and undetectable.
+   *(Strongest consensus in the literature: Wilson 2017; Noble 2009; Sandve 2013; Data
+   Carpentry.)*
 
-2. **One script → one output, no manual steps.** Every figure, table, and number in your
-   paper should trace to a script you can rerun. The moment a result depends on "then I
-   edited it by hand in Excel," it is not reproducible and you won't remember what you did.
-   *(Sandve et al. 2013, Rules 1–2, 9.)*
+2. **One script produces one output; no manual steps.** Every figure, table, and number
+   should trace to a rerunnable script. A result that depends on manual editing in Excel
+   is not reproducible and the edit will not be remembered. *(Sandve et al. 2013, Rules
+   1–2, 9.)*
 
-3. **Set the seed.** Anything random — a train/test split, a bootstrap, a permutation test,
-   cross-validation, model initialization — gets a fixed seed at the top of the script, and
-   you record it. Without it, your numbers move on every run and you can't reproduce or
-   debug them. Python: `np.random.seed(42)` / `random_state=42`. R: `set.seed(42)`.
+3. **Set the seed.** Anything random — a train/test split, a bootstrap, a permutation
+   test, cross-validation, model initialization — needs a fixed, recorded seed at the top
+   of the script. Without it, results vary between runs and cannot be reproduced or
+   debugged. Python: `np.random.seed(42)` / `random_state=42`. R: `set.seed(42)`.
    *(Sandve et al. 2013, Rule 6.)*
 
-4. **Use relative paths; never `setwd("C:/Users/you/…")`.** An absolute path works on
-   exactly one machine. Build every path relative to the project root — R: RStudio Projects
-   + the `here` package (`here("data","raw.csv")`); Python: `pathlib` relative to the
-   script. And note: in R, `rm(list=ls())` does **not** give you a clean slate — only
-   **restarting R** does. Restart often. *(Jenny Bryan, "Project-oriented workflow," 2017 —
-   whose memorable threat about absolute paths involves setting your computer on fire.)*
+4. **Use relative paths; never `setwd("C:/Users/you/…")`.** An absolute path works on one
+   machine only. Build paths relative to the project root — R: RStudio Projects with the
+   `here` package (`here("data","raw.csv")`); Python: `pathlib` relative to the script.
+   Note that in R, `rm(list=ls())` does not produce a clean session — only restarting R
+   does; restart regularly. *(Jenny Bryan, "Project-oriented workflow," 2017.)*
 
-5. **Record the environment.** "It works on my machine" is not reproducible. Capture
-   language and package versions next to the code. Python: `pip freeze > requirements.txt`
-   or a Conda `environment.yml` inside a virtual environment. R: `renv::snapshot()` (writes
-   `renv.lock`) and record `sessionInfo()`. The Turing Way's cautionary tale: the same line
-   gives `0.2` in Python 3 and `0` in Python 2. *(Sandve Rule 3; Wilson 2017.)*
+5. **Record the environment.** Capture language and package versions alongside the code;
+   "works on my machine" is not a reproducibility guarantee. Python:
+   `pip freeze > requirements.txt` or a Conda `environment.yml` inside a virtual
+   environment. R: `renv::snapshot()` (writes `renv.lock`) and record `sessionInfo()`. The
+   Turing Way notes the same line of code can give `0.2` in Python 3 and `0` in Python 2.
+   *(Sandve Rule 3; Wilson 2017.)*
 
 ---
 
-## Project structure that an AI (and a human) can navigate
+## Project structure
 
-One project = one self-contained directory with a predictable tree. This *also* makes AI
-assistants dramatically more useful — they can see where things belong.
+One project should be one self-contained directory with a predictable tree. A predictable
+structure also improves AI assistant output, since the model can infer where things
+belong.
 
 ```
 project/
@@ -63,67 +65,68 @@ project/
 ```
 
 - **Name files by content, never by version.** `fugl_meyer_analysis.R`, not `final_v2`,
-  `FINAL_real`, `analysis (3)`. Version numbers in filenames are a symptom; the cure is
-  version control.
-- **Separate raw from generated.** If you can't tell which files you made by hand and which
-  a script produced, you can't safely delete anything — and you can't trust anything.
+  `FINAL_real`, `analysis (3)`. Version numbers in filenames indicate a missing version
+  control workflow.
+- **Separate raw from generated.** If hand-made and script-produced files cannot be
+  distinguished, nothing can be safely deleted or trusted.
 
 *(Noble 2009; Wilson et al. 2017.)*
 
 ---
 
-## Notebooks: powerful, and quietly treacherous
+## Notebooks
 
-Jupyter/Colab and R notebooks are wonderful for exploration and terrible at honesty about
-their own state. In a study of ~1 million public notebooks, **only ~4% reproduced their
-original results**, and a third had cells run out of order — the fingerprint of **hidden
-state** (a variable that only exists because you ran a cell you later deleted).
+Jupyter/Colab and R notebooks are effective for exploration but do not reliably reflect
+their own execution state. In a study of ~1 million public notebooks, only ~4% reproduced
+their original results, and a third had cells run out of order — the signature of hidden
+state (a variable that persists only because a since-deleted cell was run).
 
 Mitigations, in order of impact:
 
-1. **Restart & Run All before you trust any result.** This one action escapes the failure
-   mode above. If it doesn't run top-to-bottom in a fresh kernel, it isn't real.
-2. **Notebooks for exploring; plain scripts for the pipeline** that produces your final
-   numbers (`python analysis.py`, `Rscript analysis.R`).
-3. **Move stable, reused code into a `.py`/`.R` file** you can test and import — don't let
-   it live only in cell 43.
-4. **Name notebooks in order** (`01_clean.ipynb`, `02_model.ipynb`) and write Markdown that
-   says *why*, not just *what*.
+1. **Restart & Run All before trusting any result.** This addresses the failure mode
+   directly: if the notebook does not run top-to-bottom in a fresh kernel, the result is
+   not established.
+2. **Use notebooks for exploration; use plain scripts for the pipeline** that produces
+   final numbers (`python analysis.py`, `Rscript analysis.R`).
+3. **Move stable, reused code into a `.py`/`.R` file** that can be tested and imported,
+   rather than leaving it in a single cell.
+4. **Name notebooks in execution order** (`01_clean.ipynb`, `02_model.ipynb`) and use
+   Markdown cells to record rationale, not just steps.
 
 *(Pimentel et al. 2019/2021; Grus, "I Don't Like Notebooks," 2018; Rule et al. 2019, "Ten
 Simple Rules for Writing and Sharing Computational Notebooks.")*
 
 ---
 
-## Defensive programming — your guardrail against confident-wrong AI
+## Defensive programming
 
-Scientific code fails **silently** — it produces a plausible wrong number instead of
-crashing. That's the worst outcome in research, and it's exactly what AI-generated code
-does when it misunderstands your data. The antidote is cheap:
+Scientific code that fails silently — producing a plausible but wrong number instead of
+crashing — is the worst-case outcome in research, and it is what AI-generated code
+typically does when it misreads the data. The mitigation is low-cost:
 
-- **Assert your assumptions.** After a filter: `assert len(df) == 30`. After a join: check
-  the row count didn't explode or collapse. Before a model: check no column you need is all
-  `NA`.
-- **Print `n` before and after every filter, join, and `dropna`.** Silent scope changes
-  (the model quietly fit on 47 of your 60 rows) are one of the most common AI mistakes.
-- **Turn every bug you fix into a check** so it can't come back silently.
+- **Assert assumptions.** After a filter: `assert len(df) == 30`. After a join: check the
+  row count did not expand or collapse unexpectedly. Before a model: check no required
+  column is entirely `NA`.
+- **Print `n` before and after every filter, join, and `dropna`.** Silent scope changes —
+  a model quietly fit on 47 of 60 rows — are among the most common AI-introduced errors.
+- **Convert every fixed bug into a check** so it cannot recur silently.
 
 *(Software Carpentry, "Defensive Programming"; Wilson et al. 2014.)*
 
 ---
 
-## Disclose your AI use
+## Disclosure of AI use
 
-This is now an expectation, not an option:
+This is now expected practice, not optional:
 
-- **AI cannot be an author.** Authorship requires accountability, and software can't be
-  accountable. *(ICMJE; COPE; Nature/Springer — all converge on this.)*
-- **Disclose in the Methods** if AI touched your data, analysis, code, or figures.
-- **Disclose in the Acknowledgements** if it only helped with writing.
-- **Also flag it in your cover letter** at submission.
-- **When a journal's policy is unclear, disclose anyway.** You are responsible for the
-  accuracy and originality of everything the AI produced for you — including any text or
-  image it generated. Keep your prompts and chat logs; they are your provenance trail.
+- **AI cannot be an author.** Authorship requires accountability, and software cannot be
+  held accountable. *(ICMJE; COPE; Nature/Springer converge on this position.)*
+- **Disclose in the Methods** if AI touched the data, analysis, code, or figures.
+- **Disclose in the Acknowledgements** if it only assisted with writing.
+- **Flag it in the cover letter** at submission.
+- **Disclose even when journal policy is unclear.** The researcher remains responsible
+  for the accuracy and originality of all AI-produced text or images. Retain prompts and
+  chat logs as a provenance record.
 
 Verbatim, from the bodies that set the rules:
 > ICMJE: *"Chatbots (such as ChatGPT) should not be listed as authors because they cannot
@@ -134,16 +137,17 @@ recommendations, Zielinski et al. 2023.)*
 
 ---
 
-## The reproducibility vocabulary (so you claim only what you showed)
+## Reproducibility vocabulary
 
-- **Reproducible** — same data + same analysis → same result. *(This is the workshop's
-  minimum bar.)*
-- **Robust** — same data, *different* analysis, same conclusion.
-- **Replicable** — *different* data, same analysis, same conclusion.
+- **Reproducible** — same data + same analysis → same result. This is the minimum bar
+  described in this document.
+- **Robust** — same data, different analysis, same conclusion.
+- **Replicable** — different data, same analysis, same conclusion.
 - **Generalisable** — different data and different analysis, same conclusion.
 
-Novices conflate "reproducible" with "true." It isn't. It's the floor: your own result,
-re-run, comes out the same. Everything else is a taller claim you have to earn.
+"Reproducible" is frequently conflated with "true." It is not: it is the floor — the same
+result re-run by the same analyst. Each further term is a stronger claim requiring
+separate evidence.
 
 *(The Turing Way, "Reproducible Research — Definitions.")*
 
