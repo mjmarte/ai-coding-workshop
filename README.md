@@ -30,7 +30,7 @@ Do it the day before, not in the first ten minutes of the session.
 
 **Part 1 — Python:** [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mjmarte/ai-coding-workshop/blob/main/python/01_python_starter.ipynb)
 
-**Part 2 — R:** open the Posit Cloud link the facilitator gives you, click
+**Part 2 — R:** open [posit.cloud/content/12671685](https://posit.cloud/content/12671685), click
 **Save a Permanent Copy**, then open `r/02_r_starter.R`.
 
 ---

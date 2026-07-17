@@ -35,7 +35,7 @@ yours. It's free.
 ## Tab 3 — R (Posit Cloud)
 
 1. Go to [posit.cloud](https://posit.cloud) and create a free account.
-2. Open the project link the facilitator sends you.
+2. Open [posit.cloud/content/12671685](https://posit.cloud/content/12671685).
 3. Click **Save a Permanent Copy** at the top of the screen. *(Important — if you skip
    this, your work disappears.)*
 4. In the Files pane at bottom-right, open `r/02_r_starter.R`.
