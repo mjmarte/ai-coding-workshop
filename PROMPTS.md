@@ -1,197 +1,108 @@
-# The cheat sheet
+# Prompt and verification guide
 
-Print this and keep it. The rest of the workshop is practice applying what's on this page.
+Use this page beside an AI chat and the environment where the code will run. A prompt is an
+analysis specification in compact form. It does not validate the returned code.
 
----
+## Build the request from the analysis
 
-## 1. The recipe for a prompt that works
-
-An effective prompt functions as a brief, not a request. It has five parts:
-
-| Part | What it does | Example |
-|---|---|---|
-| **Who you are** | Sets the level of the answer | *"I'm a researcher using R in RStudio. I'm a beginner."* |
-| **What the data is** | Stops it inventing columns | *"A CSV at data/x.csv with columns: id, group, age, score"* |
-| **The one task** | One thing. Not five. | *"Fit a linear model predicting score from age"* |
-| **The constraints** | Keeps it in your world | *"Use dplyr, not base R. Don't install anything new."* |
-| **The output you want** | Stops the essay | *"Just the code with short comments. No explanation."* |
-
-Paste in your **actual column names**. Hallucinated variable names arise from the
-model guessing at a structure you never showed it.
-
-**Template:**
-
-```
-I'm a [role] using [language] in [tool]. I'm a beginner.
-
-My data: [file path], one row per [unit]. Columns:
-[paste the actual column names and what they mean]
-
-Task: [one specific thing]
-
-Constraints: [libraries, style, what not to do]
-
-Give me just the code with short comments.
-```
-
----
-
-## 2. The debugging loop
-
-This accounts for roughly 80% of working with these tools. It is the normal
-mode of use, not a sign that something has gone wrong.
-
-```
-Here is my code:
-[paste the WHOLE code block]
-
-Here is the error:
-[paste the WHOLE error message, all of it, including the traceback]
-
-I'm running [R 4.4 / Python 3.11] with [package versions if you know them].
-
-What is wrong and how do I fix it?
-```
-
-- **Paste the whole error**, not a summary — line numbers and traceback detail matter.
-- **Address one error at a time.** Fix, re-run, repeat.
-- **Three-strikes rule:** if the same error persists after three attempts, the model
-  is likely stuck on a fixed (incorrect) diagnosis. Start a *new chat*, restate the
-  goal from scratch, and omit the failed attempts — fresh context outperforms continued
-  argument.
-
----
-
-## 3. Prompts that surface errors the model won't volunteer
-
-This section is the central practical content of the workshop.
-
-| Say this | Because |
+| Include | State it concretely |
 |---|---|
-| *"What is this code assuming about my data?"* | Surfaces assumptions made silently |
-| *"What would make this analysis wrong?"* | The model can identify failure modes but does not raise them unprompted |
-| *"Is this the right test? What is it assuming, and does my design meet it?"* | Catches t-tests applied to repeated measures |
-| *"Explain what line 7 does, as if to someone who's never coded."* | If the explanation doesn't hold up, the code shouldn't run |
-| *"You used a package I don't recognise. Is `[name]` real, and is it on CRAN/PyPI?"* | Hallucinated packages are common |
-| *"Rewrite this so a reviewer could reproduce it exactly."* | Forces explicit seeds, versions, and steps |
-| *"Give me two different ways to do this and tell me the trade-offs."* | Avoids anchoring on the first plausible answer |
+| Environment | `I am using R in Posit Cloud` or `Python in Colab` |
+| Unit of observation | `One row is one participant` |
+| Files and variables | Exact paths, column names, and variable meanings |
+| Analytic task | One operation or model |
+| Design constraints | Repeated records, subgroup, time boundary, required packages |
+| Requested return | Code only, imports included, short comments |
 
----
+```text
+I am a [role] using [language] in [environment].
 
-## 4. The five most common failure modes, by frequency
+My file is [path]. One row is [unit]. The columns are [names and meanings].
 
-1. **Hallucinated functions and packages.** The model calls a nonexistent function,
-   e.g. `tidystats::auto_model()`, with full confidence. → *Does this package exist?
-   Show me the docs.*
-2. **The wrong test for the design.** Repeated measures fed to an independent-samples
-   test. The model does not know your design unless told. → **State your design
-   explicitly.**
-3. **Silent scope errors.** The model fits a model on the full sample when a subgroup
-   was intended, drops NAs without reporting it, or filters a different row set than
-   specified. → *Print `nrow()` before and after every filter.*
-4. **Fabricated numbers in prose.** A requested Results paragraph can contain a df,
-   an F, and an R² that appear nowhere in the actual output. → **Check every number
-   against the model object, every time.**
-5. **Plausible-but-wrong statistical interpretation.** p = .07 described as
-   "significant"; a negative coefficient described as a positive effect. → **Read
-   the output directly.**
+I need [one analytic task]. The design constraint is [constraint].
 
----
+Use [packages]. Create [object name]. Return code only, with short comments and all imports.
+```
 
-## 5. The rules that don't bend
+Compare the code against the request before running it. A returned object with a different name,
+a changed row set, or an added analysis answers a different question.
 
-**Never paste real patient data into a chatbot.** This includes transcripts, MRNs,
-dates of birth, and "de-identified" text that hasn't been verified as such. Chat
-interfaces are not covered by your institution's BAA unless confirmed in writing.
-For AI help on real data: **share the schema, not the rows.** Column names, types,
-and a fabricated example row are sufficient to get working code.
+## Debug one failure at a time
 
-**Run it, read it, then trust it — in that order.** Code that runs without error
-can still answer a different question than the one asked.
+```text
+Here is the complete code I ran:
+[paste the code]
 
-**If you can't explain it, you can't publish it.** This is a practical constraint,
-not a moral one: you are the person who defends the analysis at committee, in
-review, and afterward.
+Here is the complete error, including the traceback:
+[paste the error]
 
-**Disclose AI use.** Journals increasingly require disclosure of AI use in analysis.
-One sentence in the methods suffices. Retain the chat log.
+I am using [R/Python version if known]. Identify the immediate cause and give the smallest
+correction. Do not rewrite the analysis.
+```
 
----
+Run the correction before requesting another change. If the same diagnosis fails twice, begin a
+new conversation with the original task, code, and error. The old conversation may be committed
+to an incorrect explanation.
 
-## 6. Prompts worth stealing
+## Prompts that inspect assumptions
 
-**Starting a new analysis**
-> I have [describe the data and design]. My research question is [X]. Before writing any
-> code, tell me what analysis approach you'd recommend and what its assumptions are.
-> Don't write code yet.
+| Ask | Check in the answer or output |
+|---|---|
+| `What does this code assume about the rows and groups?` | Unit of observation, exclusions, and joins |
+| `What design feature determines this model?` | Pairing, clustering, time order, or outcome type |
+| `Show the row count before and after each filter or join.` | Silent scope change |
+| `Explain this formula term by term.` | Whether the model encodes the design |
+| `What output supports each reported number?` | Values added in prose without a source |
+| `Give two plausible analytic approaches and their assumptions.` | Whether the first approach is being accepted by default |
+| `Is this package real? Link its CRAN or PyPI page.` | A package or function name before installation |
 
-**Understanding inherited code**
-> Here's a script I inherited. Walk me through what it does, step by step, in plain
-> language. Flag anything that looks like a bug or a questionable choice.
+## Verification rules
 
-**Making a figure publication-ready**
-> Make this ggplot publication-quality: clear axis labels with units, a title, a
-> colourblind-safe palette, theme_minimal, and save at 300 dpi. Tell me what you changed.
+1. Inspect the data before modeling: dimensions, column types, missingness, and group counts.
+2. Inspect the row count after every filter, join, or missing-data exclusion.
+3. Read the model formula. The formula must encode the intended outcome, predictors, and
+   dependence structure.
+4. Keep model output visible while writing a result sentence. Report only values returned by the
+   fitted model or a named post-fit calculation.
+5. Treat a fluent explanation as a draft. Verify its direction, numbers, sample, and model against
+   the code and output.
 
-**The one to end every session with**
-> Summarise everything we did in this conversation as a numbered list of the analysis
-> steps, so I can paste it into my methods section.
+## Data boundary
 
----
+The workshop data are synthetic. For a real project, use the institutionally approved service and
+the applicable data agreement. When requesting coding help, provide the schema, variable types,
+and fabricated example rows unless permission for actual data has been confirmed in writing.
 
-## 7. Bad vs. good, side by side
+## Prompt comparisons from this workshop
 
-Four real cases from this workshop's dataset. Same question, same model, different
-prompt. The gap is not phrasing — it's how much of your own knowledge you put in.
+### Two-group comparison
 
-**Case 1 — a two-group comparison**
+| Request | What you must inspect |
+|---|---|
+| `Compare word count between my groups.` | Whether the comparison addresses the research question, the groups are appropriate, and the requested test's assumptions are met. |
+| `Compare word count by group. Controls are near the upper range of WAB-AQ by construction. Show group sizes and distributions before selecting a test, and explain whether a pooled association with WAB-AQ would answer a within-aphasia question.` | Whether the returned analysis distinguishes a group contrast from a within-group association. |
 
-| | Prompt | What comes back |
-|---|---|---|
-| Bad | *"Compare word count between my two groups."* | An independent-samples t-test on all 60 rows, controls and patients pooled with no mention of the ceiling effect. |
-| Good | *"Compare word count between my two groups. Note: the control group is at ceiling on the severity measure by design — flag if that limits what a group comparison on word count can tell me, and check the variance in each group before choosing a test."* | The model flags the ceiling issue unprompted, checks variance ratios, and recommends a test suited to unequal variance — or recommends restricting the comparison. |
+### Repeated measurements
 
-**Case 2 — repeated measures**
+| Request | What you must inspect |
+|---|---|
+| `I measured participants at 1 and 12 months. Did they improve?` | Whether each participant's two records are treated as related. |
+| `Thirty participants were each assessed at acute and chronic timepoints. Fit WAB-AQ from timepoint with a random intercept for participant ID. Explain why this term is in the formula and show the model summary and confidence interval.` | `participant_id` appears in the random-effects term and the time reference level is stated. |
 
-| | Prompt | What comes back |
-|---|---|---|
-| Bad | *"I have 30 patients measured at 1 month and 12 months. Did their scores improve? Give me the R code."* | A paired test roughly half the time; an independent-samples test or unpaired `lm()` the other half — see §4 in `SCRIPT.md` for the live version of this failure. |
-| Good | *"I have 30 patients, each measured twice (1 month, 12 months post-stroke) — repeated measures, not independent observations. Fit a model that accounts for the within-person correlation and tell me why a plain two-sample test would be wrong here."* | A mixed-effects or paired approach on the first attempt, with the independence assumption named explicitly instead of surfaced only on follow-up. |
+### Acute-to-chronic prediction
 
-**Case 3 — a multi-predictor model**
+| Request | What you must inspect |
+|---|---|
+| `Use machine learning to predict 12-month WAB-AQ.` | Whether later variables, outcome leakage, training performance, or preprocessing outside resampling enter the workflow. |
+| `Estimate 12-month WAB-AQ from acute variables only. Define the outcome and predictor sets before fitting. Compare a clinical predictor set with a clinical-plus-imaging set using repeated cross-validation. Keep imputation, scaling, and fitting inside the pipeline. Report resampled MAE and R-squared, then state what this synthetic development exercise does not establish.` | Predictor timing, resampling, and the interpretation boundary. |
 
-| | Prompt | What comes back |
-|---|---|---|
-| Bad | *"Build a regression predicting severity from my language measures."* | A model with all predictors dumped in, no mention that two of them are collinear, no report of what happens to each one's p-value when the others are added. |
-| Good | *"Build a regression predicting severity from these language measures: [list]. Two of these (content-word ratio, word count) are likely correlated with each other. Report each predictor's p-value in the single-predictor model and in the full model side by side, so I can see if anything changes."* | The same fit, but with the vanishing-effect problem (§5 in `STATISTICS_GUARDRAILS.md`) visible in the output instead of buried in it. |
+## End every session with a record
 
-**Case 4 — acute prediction of 12-month outcome**
+```text
+Summarize the analysis steps completed in this conversation. For each step, name the input,
+output object or file, model formula if applicable, and unresolved decision. Do not write Methods
+prose or add results that are not in the displayed output.
+```
 
-| | Prompt | What comes back |
-|---|---|---|
-| Bad | *"Use machine learning to predict 12-month WAB-AQ."* | A model that may use variables collected after the acute assessment, report training performance, or scale the full dataset before cross-validation. |
-| Good | *"I want to estimate 12-month WAB-AQ from variables available at the acute assessment only. Define the outcome and predictor sets before modeling. Compare a clinical baseline model with a clinical-plus-imaging model using repeated cross-validation; put imputation, scaling, and model fitting inside each resampling fold. Report MAE and R-squared with their fold-to-fold variability. Do not make clinical or causal claims from this development dataset."* | A time-bounded, leakage-safe evaluation with an interpretation matched to a development exercise rather than a clinical validation study. |
-
-**The pattern.** The AI has the statistical knowledge — it demonstrates that the moment
-you ask a follow-up (§3, §4 in `SCRIPT.md`). It does not spend that knowledge unless
-your prompt gives it a reason to. **A good prompt is not cleverer wording. It's your
-own domain and statistical knowledge, written into the request instead of left in your
-head.** The AI can write the code. It cannot supply the part of the question you didn't ask.
-
----
-
-## 8. Go deeper (the sourced versions of this page)
-
-This page is the one-pager. When you're back on your real research and want the *why*, with
-citations, it's all in [`guardrails/`](guardrails/):
-
-- **[AI_CODING_RULES.md](guardrails/AI_CODING_RULES.md)** — how to work with the AI, and the
-  evidence behind every rule here.
-- **[STATISTICS_GUARDRAILS.md](guardrails/STATISTICS_GUARDRAILS.md)** — the eleven statistical
-  traps it walks you into, each with a catch-prompt.
-- **[DATA_PRIVACY.md](guardrails/DATA_PRIVACY.md)** — what you may and may not paste, in
-  detail.
-- **[ANALYSIS_REVIEW_RUBRIC.md](guardrails/ANALYSIS_REVIEW_RUBRIC.md)** — a printable
-  scorecard for any AI analysis.
-- **[RESEARCH_PROJECT_RULES.md](guardrails/RESEARCH_PROJECT_RULES.md)** — a rules file that
-  makes the AI follow all of this itself.
+`guardrails/` contains background resources. Their literature references are not a substitute for
+a source audit when a claim enters a manuscript, grant, protocol, or methods document.

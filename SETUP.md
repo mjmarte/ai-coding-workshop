@@ -1,68 +1,44 @@
-# Setup — do this BEFORE the workshop (10 minutes)
+# Workshop setup
 
-You will not install anything. Everything runs in your browser. You need
-**three tabs open** on the day.
+Complete these steps before the session. Bring a laptop rather than a tablet.
 
----
+## 1. AI assistant
 
-## Tab 1 — Your AI assistant
+Open an AI assistant available to you, such as ChatGPT, Claude, or an institutionally approved
+service. Sign in and start a new conversation. The workshop uses synthetic data only.
 
-Any one of these. If you have none, make a free Claude account — it takes a minute.
+For real research data, confirm the approved service and applicable data agreement before sharing
+any content with an AI tool.
 
-- **Claude** — [claude.ai](https://claude.ai) (free tier is fine)
-- **ChatGPT** — [chat.openai.com](https://chat.openai.com)
-- Whatever your institution provides
+## 2. Python in Google Colab
 
-> Check with your IT/compliance office about which AI tools are approved for work use.
-> Today's data is synthetic, so it doesn't matter for the workshop — but it matters
-> the moment you go back to your own data.
+1. Sign in at [Google Colab](https://colab.research.google.com).
+2. Open the link supplied by the facilitator: [core Python notebook](https://colab.research.google.com/github/mjmarte/ai-coding-workshop/blob/main/python/01_python_starter.ipynb).
+3. Run the first cell and wait for `Ready.`.
 
----
+The facilitator may assign the [advanced recovery-prediction notebook](https://colab.research.google.com/github/mjmarte/ai-coding-workshop/blob/main/python/02_advanced_recovery_starter.ipynb). Do not open it unless asked.
 
-## Tab 2 — Python (Google Colab)
+## 3. R in Posit Cloud
 
-1. Go to [colab.research.google.com](https://colab.research.google.com) and sign in
-   with any Google account.
-2. Click the **Open in Colab** button in the workshop README, or use the link the
-   facilitator sends you.
-3. Run the first cell. If it prints `Ready.` you are done.
+1. Create or sign in to a [Posit Cloud](https://posit.cloud) account.
+2. Open [the workshop project](https://posit.cloud/content/12671685).
+3. Select "Save a Permanent Copy."
+4. In the Files pane, open `r/02_r_starter.R`.
 
-If the facilitator assigns the advanced recovery-prediction branch, they will provide a
-second Colab link during the session. You do not need to open it beforehand.
+The permanent copy is where you run and retain your own work. Do not edit the shared project.
 
-Colab is a Python notebook that runs on Google's computers. Nothing is installed on
-yours. It's free.
+## If a setup step fails
 
----
+Bring the error to the facilitator. Do not spend the session installing local software. If the
+network blocks Colab or Posit, pair with another participant and follow the shared workflow.
 
-## Tab 3 — R (Posit Cloud)
+## Optional local R setup
 
-1. Go to [posit.cloud](https://posit.cloud) and create a free account.
-2. Open [posit.cloud/content/12671685](https://posit.cloud/content/12671685).
-3. Click **Save a Permanent Copy** at the top of the screen. *(Important — if you skip
-   this, your work disappears.)*
-4. In the Files pane at bottom-right, open `r/02_r_starter.R`.
-
-Posit Cloud is RStudio running in your browser. Nothing is installed on your computer.
-The free tier is plenty for today.
-
----
-
-## If a step fails
-
-That's fine — come anyway, we'll sort it out in the first ten minutes. Bring a laptop,
-not a tablet. If your institution's network blocks one of these sites, a phone hotspot
-usually solves it.
-
----
-
-## Optional, if you already have R installed locally
-
-Run this in the RStudio console and the whole workshop lands in your home directory:
+If you already use RStudio locally and the facilitator has confirmed this route, clone the
+repository and run:
 
 ```r
-install.packages("usethis")
-usethis::use_course("YOUR-USERNAME/ai-coding-workshop")
+source("r/install_packages.R")
 ```
 
-Then `source("r/install_packages.R")` once to get the packages.
+Open `r/02_r_starter.R` from the repository root so that `data/` resolves correctly.

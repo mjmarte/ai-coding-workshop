@@ -1,10 +1,7 @@
-"""
-make_data.py — builds the SYNTHETIC dataset used in the workshop.
+"""Build the synthetic dataset used in the workshop.
 
-Nothing in here is real patient data. Every transcript is generated from
-templates by the code below. That is deliberate: the whole point of the
-workshop is that you can practice AI-assisted coding without ever pasting
-protected health information into a chatbot.
+Each transcript is generated from templates in this file. The resulting files
+support reproducible teaching exercises and are not participant data.
 
 Run:  python data/make_data.py
 Makes: transcripts.csv, transcripts_long.csv, features.csv, recovery_prediction.csv
@@ -16,8 +13,8 @@ import pandas as pd
 RNG = np.random.default_rng(20260713)
 
 # ---------------------------------------------------------------- content units
-# Each "main concept" of the Cookie Theft / Modern Cookie Theft scene, rendered
-# at three levels of degradation. Index 0 = intact, 1 = reduced, 2 = fragmented.
+# Each scene element is rendered at three constructed severity levels.
+# Index 0 = intact, 1 = reduced, 2 = limited.
 UNITS = [
     ("boy_stool",  ["a little boy is standing on a wooden stool",
                     "the boy is on the stool",
@@ -60,22 +57,22 @@ FUNCTION_PAD = ["the", "a", "and", "it's", "is", "that", "there"]
 
 
 def degrade(sentence, severity, rng):
-    """Insert fillers, empty words and repetitions in proportion to severity."""
+    """Insert constructed fillers, vague words, and repetitions by severity level."""
     words = sentence.split()
     out = []
     for w in words:
-        # repeat a word (perseveration / self-correction)
+        # Repeat a word.
         if rng.random() < 0.14 * severity:
             out.append(w)
-        # swap a content word for a vague, low-information word
+        # Replace a content word with a vague word.
         if rng.random() < 0.06 * severity and len(w) > 4:
             out.append(rng.choice(EMPTY))
         else:
             out.append(w)
-        # hesitation filler
+        # Add a filler.
         if rng.random() < 0.24 * severity:
             out.append(rng.choice(FILLERS))
-        # stranded function word (false start)
+        # Add a function-word fragment.
         if rng.random() < 0.12 * severity:
             out.append(rng.choice(FUNCTION_PAD))
     return " ".join(out)
@@ -87,7 +84,7 @@ def make_transcript(severity, rng):
     if rng.random() < 0.3 + 0.5 * severity:
         parts.append(rng.choice(OPENERS))
     for _name, variants in UNITS:
-        # more severe -> fewer main concepts produced
+        # Higher severity yields fewer constructed scene elements.
         if rng.random() > (1.0 - 0.72 * severity):
             continue
         if severity < 0.25:
@@ -116,7 +113,7 @@ def demographics(n, rng, aphasia):
 def build():
     n_ctrl, n_aph = 30, 30
 
-    # controls: essentially no impairment
+    # Controls are constructed with low severity values.
     ctrl_sev = np.clip(RNG.normal(0.04, 0.03, n_ctrl), 0, 0.12)
     ctrl = demographics(n_ctrl, RNG, aphasia=False)
     ctrl["participant_id"] = [f"C{i:03d}" for i in range(1, n_ctrl + 1)]
@@ -125,7 +122,7 @@ def build():
     ctrl["wab_aq"] = np.clip(100 - 8 * ctrl_sev + RNG.normal(0, 0.8, n_ctrl), 96, 100).round(1)
     ctrl["transcript"] = [make_transcript(s, RNG) for s in ctrl_sev]
 
-    # aphasia, acute (~1 month post-onset)
+    # Aphasia group at acute assessment, about 1 month post-onset.
     aph_sev = np.clip(RNG.beta(2.2, 2.4, n_aph), 0.08, 0.95)
     aph = demographics(n_aph, RNG, aphasia=True)
     aph["participant_id"] = [f"A{i:03d}" for i in range(1, n_aph + 1)]
@@ -138,8 +135,8 @@ def build():
             "months_post_onset", "wab_aq", "transcript"]
     baseline = pd.concat([ctrl[cols], aph[cols]], ignore_index=True)
 
-    # ---- longitudinal: the same 30 aphasia participants ~12 months post-onset
-    recovery = RNG.uniform(0.45, 0.92, n_aph)           # multiplicative severity change
+    # ---- longitudinal: the same 30 aphasia participants about 12 months post-onset
+    recovery = RNG.uniform(0.45, 0.92, n_aph)           # constructed severity change
     sev_t2 = np.clip(aph_sev * recovery, 0.02, 0.95)
     t1 = aph[["participant_id", "age", "sex", "education_years", "wab_aq",
               "months_post_onset", "transcript"]].copy()
@@ -158,10 +155,10 @@ def build():
 
 
 def build_recovery_prediction():
-    """Synthetic acute-stroke cohort for the advanced prediction exercise.
+    """Synthetic acute stroke cohort for the advanced prediction exercise.
 
     One row represents one participant. All predictors are available at the
-    acute assessment; the 12-month WAB-AQ is the outcome and must never enter
+    acute assessment; the 12-month WAB-AQ is the outcome and is excluded from
     the predictor matrix. The values are illustrative, not a clinical model.
     """
     rng = np.random.default_rng(20260714)
@@ -207,8 +204,7 @@ def build_recovery_prediction():
 
 # -------------------------------------------------- features (the Python answer)
 def extract_features(df):
-    """Must match python/01_python_starter.ipynb exactly, so attendees can
-    compare their own numbers against features.csv and get the same answer."""
+    """Match the feature definitions in python/01_python_starter.ipynb."""
     import spacy
     nlp = spacy.load("en_core_web_sm")
     fillers = {"uh", "um", "well", "hmm", "okay", "alright", "so"}
@@ -216,10 +212,10 @@ def extract_features(df):
     rows = []
     for _, r in df.iterrows():
         text = r["transcript"]
-        # simple features: plain whitespace split (same as the notebook)
+        # Plain whitespace features, matching the notebook.
         words = text.lower().replace(".", " ").split()
         n = max(len(words), 1)
-        # POS features: spaCy tokens (same as the notebook)
+        # Part-of-speech features, matching the notebook.
         doc = nlp(text)
         toks = [t for t in doc if not t.is_punct and not t.is_space]
         m = max(len(toks), 1)
@@ -253,7 +249,7 @@ if __name__ == "__main__":
     chk = baseline.merge(feats, on="participant_id")
     print(f"{len(baseline)} baseline rows, {len(long)} longitudinal rows")
     print(f"{len(recovery)} acute-to-12-month prediction rows")
-    print("\nCorrelations with WAB-AQ (should be strong — that's the point):")
+    print("\nCorrelations with WAB-AQ in the constructed dataset:")
     for c in ["content_word_ratio", "type_token_ratio", "n_words", "filler_rate"]:
         print(f"  {c:22s} r = {chk['wab_aq'].corr(chk[c]):+.2f}")
     print("\nExample control  :", baseline.query("group=='control'").transcript.iloc[0][:110])

@@ -52,12 +52,11 @@ print("Ready.")
 HEADER_STARTER = '''
 # Advanced Python: acute-to-12-month recovery prediction
 
-This optional notebook uses a separate synthetic cohort. It reflects a common clinical
-prediction workflow: baseline clinical, discourse, lesion, and disconnection measures are
-used to estimate a 12-month language outcome.
+This optional notebook uses a separate synthetic cohort. It defines predictors available at
+an acute assessment and estimates a synthetic 12-month language outcome.
 
-The exercise is about the workflow, not a clinical claim. No result in this notebook is
-externally validated, clinically deployable, or drawn from real participants.
+The exercise evaluates a prediction workflow. It does not provide external validation,
+clinical utility, calibration, or evidence from real participants.
 
 For each task, copy the prompt into an AI assistant, paste the returned code into the empty
 cell, run it, and compare the result with the checkpoint.
@@ -75,11 +74,11 @@ TASKS = [
     (
         "Task A1 - Define the prediction question before fitting a model",
         '''
-**Goal:** identify the outcome, pre-specify predictors available at the acute assessment,
+Goal: identify the outcome, specify predictors available at the acute assessment,
 and confirm one row per participant.
 
-Prediction begins with a time boundary. A 12-month value cannot be used to predict itself,
-and a variable measured after the acute assessment cannot enter an acute model.
+The prediction question requires a time boundary. The 12-month outcome and later measurements
+are excluded from the acute predictor matrix.
 ''',
         '''I am working in Python with `data/recovery_prediction.csv`, a synthetic cohort with one
 row per acute-stroke participant. My outcome is `outcome_wab_aq_12m`, a 12-month WAB-AQ.
@@ -114,16 +113,16 @@ assert recovery["participant_id"].is_unique
 print("participants:", len(recovery))
 print(recovery.isna().sum())
 ''',
-        "Expected: **90 participants**, one row per participant, and no outcome or identifier in either predictor list.",
+        "Expected: 90 participants, one row per participant, and no outcome or identifier in either predictor list.",
     ),
     (
         "Task A2 - Compare baseline and multimodal models without leakage",
         '''
-**Goal:** compare a clinical baseline model with a model that additionally includes acute
+Goal: compare a clinical baseline model with a model that additionally includes acute
 lesion and disconnection measures.
 
-All preprocessing must occur within each resampling fold. Standardizing before splitting
-would allow held-out data to influence training.
+Imputation, scaling, and fitting occur within each resampling fold so that held-out records do
+not influence the training procedure.
 ''',
         '''Using `recovery`, `outcome`, `clinical_features`, and `multimodal_features`, compare two
 Ridge-regression pipelines: a clinical model and a clinical-plus-imaging model.
@@ -170,13 +169,12 @@ cv_summary = pd.DataFrame(
 ).round(2)
 print(cv_summary)
 ''',
-        "The multimodal model should have lower resampled MAE than the clinical model. This is a result in a synthetic development cohort, not evidence of clinical utility.",
+        "In the supplied synthetic data, the multimodal model has lower resampled MAE. This is not evidence of clinical utility.",
     ),
     (
         "Task A3 - Inspect out-of-fold predictions and error distribution",
         '''
-**Goal:** create predictions for cases held out of the model fit, then inspect error rather
-than relying on a single summary metric.
+Goal: generate held-out predictions and inspect their errors alongside the resampled summary.
 ''',
         '''Using the multimodal feature set, generate one out-of-fold prediction per participant with
 5-fold shuffled KFold cross-validation and random_state=202607. Keep imputation, scaling, and
@@ -186,8 +184,8 @@ Make a two-panel matplotlib figure: observed versus predicted 12-month WAB-AQ wi
 line, and absolute prediction error by sex with individual points. Print overall MAE and MAE by
 sex with the number of participants per group.
 
-Treat the sex comparison as an error audit, not as evidence of a subgroup difference. Give only
-code with short comments.''',
+Treat the sex comparison as a descriptive error audit, not evidence of a subgroup difference.
+Give only code with short comments.''',
         '''
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_absolute_error
@@ -222,16 +220,16 @@ axes[1].set(xticks=[0, 1], xticklabels=["F", "M"], ylabel="Absolute prediction e
 fig.tight_layout()
 plt.show()
 ''',
-        "Every point in the first panel was predicted by a model that did not train on that participant. The displayed subgroup errors are descriptive and need adequate sample size before interpretation.",
+        "Each point in the first panel was predicted without fitting that participant. The displayed subgroup errors are descriptive.",
     ),
     (
         "Task A4 - Fact-check an AI-written prediction summary",
         '''
-**Goal:** constrain an AI-written summary to the resampling output and the scope of a
+Goal: constrain an AI-written summary to the resampling output and the scope of a
 synthetic development exercise.
 
-Cross-validation evaluates model performance under resampling. It does not establish clinical
-utility, causal contribution, external validity, calibration, or deployment readiness.
+Cross-validation estimates performance under the specified resampling procedure. It does not
+establish clinical utility, causal contribution, external validity, calibration, or deployment readiness.
 ''',
         '''Here is my cross-validation summary table from a synthetic development exercise:
 
@@ -249,11 +247,11 @@ causal, or ready for deployment.''',
     (
         "Task A5 - Use an agent for a bounded reproducibility audit",
         '''
-**Goal:** ask an agent to inspect the project without giving it authority to alter data or
+Goal: ask an agent to inspect the project without authority to alter data or
 analysis files.
 
-Agents are useful for inventory, documentation, and consistency checks. They do not decide
-which predictors belong in a clinical model or whether a prediction result is clinically valid.
+An agent can inventory files and identify consistency questions. It does not determine the
+predictor set or the validity of a clinical claim.
 ''',
         '''I am in the `ai-coding-workshop` repository. Perform a READ-ONLY reproducibility audit of
 the advanced recovery-prediction exercise. Do not edit, create, delete, or run any file.
@@ -263,8 +261,8 @@ input, (3) the notebook that consumes it, (4) model outcome and predictors, and 
 or interpretation risk at each stage. Flag any claim in the materials that exceeds what a
 synthetic development exercise can establish. Cite file paths and line numbers where possible.''',
         '''
-# Do not run code for this task. Paste the prompt into Codex or another coding agent
-# with read-only access to the workshop repository, then inspect its cited file paths.
+# Do not run code for this task. Paste the prompt into a coding agent with read-only
+# repository access, then inspect the cited file paths yourself.
 ''',
         "A useful agent response cites the generator, the CSV, this notebook, and the resampling code. It does not make clinical claims or edit the project.",
     ),
@@ -276,9 +274,9 @@ def build(starter):
     for title, goal, prompt, solution, checkpoint in TASKS:
         cells.append(md(f"---\n## {title}\n\n{goal.strip()}"))
         if starter:
-            cells.append(md("**Copy this prompt into your AI assistant:**\n\n```\n" + prompt.strip() + "\n```"))
+            cells.append(md("Copy this prompt into your AI assistant:\n\n```\n" + prompt.strip() + "\n```"))
             cells.append(code("# paste the AI's code here, then press Shift+Enter to run it\n"))
-            cells.append(md(f"> **Checkpoint.** {checkpoint}"))
+            cells.append(md(f"> Checkpoint: {checkpoint}"))
         else:
             cells.append(code(solution))
             cells.append(md(f"> {checkpoint}"))

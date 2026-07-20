@@ -5,8 +5,8 @@ every advanced task in the same hour. Choose one branch after the opening prompt
 
 ## Make the route decision at minute 5
 
-Ask: “Have you already used an AI assistant to write and run R or Python code for your own
-research?”
+Ask: "Have you already used an AI assistant to write and run R or Python code for your own
+research?"
 
 - If most hands are down, use the core route in [SCRIPT_1HR.md](SCRIPT_1HR.md).
 - If most hands are up, use an advanced branch as the shared-screen route. The recovery-prediction
@@ -26,9 +26,9 @@ automated scoring.
 
 **Open:** [Python Task 7](https://colab.research.google.com/github/mjmarte/ai-coding-workshop/blob/main/python/01_python_starter.ipynb), then scroll to “Narrative-content proxy against a reference description.”
 
-**Say:**
+Say:
 
-> We are moving from counts to a content-sensitive measure. This is TF-IDF overlap with one reference description. It is useful because every operation is inspectable. It is not a validated main-concept analysis, an embedding model, or a substitute for a human scoring protocol.
+> This task calculates TF-IDF overlap with one reference description. Each operation is inspectable. It is not a validated main-concept analysis, an embedding model, or a substitute for a human scoring protocol.
 
 **Ask participants to do:** run Task 7, then ask the AI:
 
@@ -38,31 +38,32 @@ For each reason, state whether it is a measurement limitation, a reference-text 
 a property of the transcript. Do not propose a clinical interpretation from this synthetic data.
 ```
 
-**Debrief question:** “What would have to be specified before this became a defensible outcome
-measure in a study?”
+Debrief question: "What would need to be specified before this became a defensible outcome
+measure in a study?"
 
 Expected answers: scoring target, reference set, preprocessing decisions, human benchmark,
 reliability, validation sample, and the population in which it will be used.
 
 ## Branch B: acute prediction of 12-month language outcome
 
-**Use when:** the room already understands basic R/Python prompting and wants an applied model
-development exercise.
+**Use when:** the room already understands basic R/Python prompting and wants a model-development
+exercise.
 
 **Open:** [advanced recovery-prediction notebook](https://colab.research.google.com/github/mjmarte/ai-coding-workshop/blob/main/python/02_advanced_recovery_starter.ipynb).
 
-**Say:**
+Say:
 
-> This synthetic cohort resembles an acute-to-chronic recovery question. The model may use only variables available during the acute assessment. The 12-month WAB-AQ is the outcome. The first error to prevent is temporal leakage: placing a later variable in the predictor matrix.
+> The synthetic cohort defines an acute-to-chronic prediction question. Only variables available
+> at the acute assessment enter the predictor matrix. The 12-month WAB-AQ is the outcome.
 
 Run Tasks A1 and A2. If time remains, run A3.
 
-**Debrief question:** “What does a lower cross-validated mean absolute error establish here, and
-what does it not establish?”
+Debrief question: "What does a lower cross-validated mean absolute error establish here, and
+what does it not establish?"
 
-**Answer:** It establishes better resampled performance in this synthetic development dataset.
-It does not establish external validity, calibration in a new hospital, clinical usefulness,
-or a causal contribution of an imaging feature.
+Answer: It indicates lower error under the specified resampling procedure in this synthetic
+development dataset. It does not establish external validity, calibration in a new hospital,
+clinical usefulness, or a causal contribution of an imaging feature.
 
 **Advanced fact-check prompt:**
 
@@ -81,14 +82,15 @@ synthetic development exercise, remove it.
 
 ## Branch C: agents for a bounded project audit
 
-**Use when:** participants already code independently and want to see a safe use of Codex or a
+**Use when:** participants already code independently and want to see a bounded use of Codex or a
 similar coding agent.
 
 **Open:** Task A5 in the advanced recovery notebook.
 
-**Say:**
+Say:
 
-> The agent receives a defined inspection task and no authority to edit data, run analysis, or make clinical claims. Its output is an inventory for us to check, not a decision made on our behalf.
+> The agent receives an inspection task and no authority to edit data, run analysis, or make
+> clinical claims. Its output is an inventory that requires file-level checking.
 
 **Do:** Paste the Task A5 prompt into Codex with the workshop repository open. Read the returned
 table against the files it cites. Ask the room to identify one place where the agent’s response
