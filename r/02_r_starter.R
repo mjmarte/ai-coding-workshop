@@ -175,14 +175,15 @@ dir.create("outputs", showWarnings = FALSE)
 #
 # PROMPT:
 # -----------------------------------------------------------------------------
-# Read data/transcripts_long.csv. It has 60 rows: 30 participants with aphasia,
+# Read data/transcripts_long.csv into a data frame named `long`. It has 60 rows: 30 participants with aphasia,
 # each measured at two timepoints ("acute" and "chronic"). Columns:
 # participant_id, timepoint, months_post_onset, age, sex, education_years,
 # wab_aq, transcript.
 #
 # These are repeated measures, so I need a mixed-effects model, not a plain lm.
 # Using lme4, fit wab_aq predicted by timepoint with a random intercept for
-# participant_id. Make timepoint a factor with "acute" as the reference. Show me
+# participant_id. Store the fitted model as `long_model`. Include all required
+# library() calls. Make timepoint a factor with "acute" as the reference. Show me
 # the summary and Wald confidence intervals.
 #
 # Then make a spaghetti plot: one grey line per participant across the two

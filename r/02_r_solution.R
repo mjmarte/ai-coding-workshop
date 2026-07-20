@@ -108,9 +108,9 @@ long <- read_csv("data/transcripts_long.csv", show_col_types = FALSE) |>
 
 # Repeated measures: two visits per participant. A plain lm here would treat
 # the 60 rows as 60 independent people. They are not. Random intercept per person.
-m2 <- lmer(wab_aq ~ timepoint + (1 | participant_id), data = long)
-summary(m2)
-confint(m2, method = "Wald")
+long_model <- lmer(wab_aq ~ timepoint + (1 | participant_id), data = long)
+summary(long_model)
+confint(long_model, method = "Wald")
 
 # Spaghetti plot of individual recovery trajectories
 ggplot(long, aes(x = timepoint, y = wab_aq, group = participant_id)) +
