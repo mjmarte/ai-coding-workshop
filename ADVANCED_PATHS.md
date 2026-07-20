@@ -1,7 +1,9 @@
-# Advanced paths: choose one when the room moves quickly
+# Advanced workshop routes
 
-The core one-hour route is for participants new to AI-assisted research coding. Do not run
-every advanced task in the same hour. Choose one branch after the opening prompt exercise.
+The acute-to-chronic recovery-prediction route is the primary option for a room that already
+uses AI to write and run research code. Its complete 45-minute facilitator script is
+[SCRIPT_ADVANCED_45.md](SCRIPT_ADVANCED_45.md). The shorter branches below are alternatives,
+not material to compress into the same session.
 
 ## Make the route decision at minute 5
 
@@ -9,15 +11,14 @@ Ask: "Have you already used an AI assistant to write and run R or Python code fo
 research?"
 
 - If most hands are down, use the core route in [SCRIPT_1HR.md](SCRIPT_1HR.md).
-- If most hands are up, use an advanced branch as the shared-screen route. The recovery-prediction
-  branch replaces the basic R sequence; it retains explicit checks for leakage, resampling, and
-  interpretation.
-- If experience is mixed, demonstrate the core task once, then let experienced participants use
-  an advanced notebook while you help newer participants complete the core task.
+- If most hands are up, use [SCRIPT_ADVANCED_45.md](SCRIPT_ADVANCED_45.md). It includes Tasks A1
+  through A4, with predictor timing, resampling, held-out predictions, and output-constrained
+  writing.
+- If experience is mixed, use the mixed-room table in `SCRIPT_ADVANCED_45.md`. The advanced route
+  remains on the shared screen; newer participants complete the specified core checkpoints.
 
-In a mixed room, the shared screen follows the core route and experienced participants work
-independently from the prompts below. In an experienced room, the facilitator shares the
-selected branch and the whole room follows it.
+In an experienced room, all participants follow the advanced notebook. Do not divide the shared
+screen between two full analyses.
 
 ## Branch A: narrative discourse and automated measurement
 
@@ -56,7 +57,7 @@ Say:
 > The synthetic cohort defines an acute-to-chronic prediction question. Only variables available
 > at the acute assessment enter the predictor matrix. The 12-month WAB-AQ is the outcome.
 
-Run Tasks A1 and A2. If time remains, run A3.
+Use [SCRIPT_ADVANCED_45.md](SCRIPT_ADVANCED_45.md), which runs Tasks A1 through A4 in sequence.
 
 Debrief question: "What does a lower cross-validated mean absolute error establish here, and
 what does it not establish?"
@@ -96,16 +97,5 @@ Say:
 table against the files it cites. Ask the room to identify one place where the agent’s response
 must be checked by a person.
 
-## Time box for the experienced-room fast-track route
-
-| Minutes | Shared screen | Advanced participants |
-|---:|---|---|
-| 0-10 | Opening and prompt-quality demonstration | Same |
-| 10-18 | Advanced notebook Task A1 | Identify the time boundary and predictor sets |
-| 18-38 | Advanced notebook Task A2 | Compare the two resampled models |
-| 38-50 | Advanced notebook Task A3 | Inspect out-of-fold predictions and error |
-| 50-56 | Advanced fact-check prompt below | Match every claim to `cv_summary` |
-| 56-60 | Close | Report one constraint they added to a prompt |
-
-For a discourse-focused room, replace Tasks A1-A3 with Python Task 7, the Branch A follow-up
-prompt, and Task 8. Retain the final output fact-check.
+For a discourse-focused room, use Branch A followed by Python Task 8 and the final output
+fact-check. Do not merge that route with the recovery-prediction script.

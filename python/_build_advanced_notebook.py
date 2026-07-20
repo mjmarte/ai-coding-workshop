@@ -1,4 +1,4 @@
-"""Generate the optional advanced recovery-prediction notebooks."""
+"""Generate the advanced recovery-prediction notebooks."""
 import json
 import pathlib
 
@@ -52,7 +52,7 @@ print("Ready.")
 HEADER_STARTER = '''
 # Advanced Python: acute-to-12-month recovery prediction
 
-This optional notebook uses a separate synthetic cohort. It defines predictors available at
+This advanced notebook uses a separate synthetic cohort. It defines predictors available at
 an acute assessment and estimates a synthetic 12-month language outcome.
 
 The exercise evaluates a prediction workflow. It does not provide external validation,
@@ -169,7 +169,9 @@ cv_summary = pd.DataFrame(
 ).round(2)
 print(cv_summary)
 ''',
-        "In the supplied synthetic data, the multimodal model has lower resampled MAE. This is not evidence of clinical utility.",
+        "Expected: clinical MAE 5.25 (SD 0.71), R-squared 0.81 (SD 0.08); "
+        "clinical-plus-imaging MAE 4.85 (SD 0.84), R-squared 0.82 (SD 0.08). "
+        "These are synthetic development results, not evidence of clinical utility.",
     ),
     (
         "Task A3 - Inspect out-of-fold predictions and error distribution",
@@ -220,7 +222,8 @@ axes[1].set(xticks=[0, 1], xticklabels=["F", "M"], ylabel="Absolute prediction e
 fig.tight_layout()
 plt.show()
 ''',
-        "Each point in the first panel was predicted without fitting that participant. The displayed subgroup errors are descriptive.",
+        "Expected: overall out-of-fold MAE 4.84. Each point in the first panel was predicted "
+        "without fitting that participant. The displayed subgroup errors are descriptive.",
     ),
     (
         "Task A4 - Fact-check an AI-written prediction summary",

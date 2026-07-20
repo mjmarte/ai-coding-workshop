@@ -1,22 +1,22 @@
 # Facilitator guide
 
-The current live format is a one-hour, hands-on session. Use [SCRIPT_1HR.md](SCRIPT_1HR.md)
-for the exact delivery language and [ADVANCED_PATHS.md](ADVANCED_PATHS.md) to select a route
-after the initial readiness check.
+The current live format is a one-hour, hands-on session. Use [SCRIPT_1HR.md](SCRIPT_1HR.md) for
+the core route and [SCRIPT_ADVANCED_45.md](SCRIPT_ADVANCED_45.md) for the primary advanced route.
 
 ## Before the session
 
-- Open an AI chat, the core Colab notebook, the shared Posit project, and `PROMPTS.md` on the
-  display you will share.
-- Open this guide, `SCRIPT_1HR.md`, the Python and R solution files, and a timer on the private
-  display.
-- Run the Colab setup cell and confirm `Ready.`.
-- In Posit, run `r/install_packages.R` only if the project does not already load the required R
-  packages. Confirm that `readr`, `dplyr`, `ggplot2`, and `lme4` load.
-- Run `r/02_r_solution.R` once and retain the Console output for the mixed-model fallback.
-- Test the public Colab link and the Posit copy flow in a browser session that is not signed in.
+- Open an AI chat, the selected Colab notebook, and `PROMPTS.md` on the display you will share.
+- Open the shared Posit project only for the core route or the mixed-room core checkpoints.
+- On the private display, open this guide, the selected facilitator script, its solution notebook,
+  and a timer. Open `r/02_r_solution.R` when Posit is part of the route.
+- Run the selected Colab setup cell and confirm `Ready.`.
+- For the core or mixed route, run `r/install_packages.R` only if the shared Posit project does
+  not already load the required packages. Confirm that `readr`, `dplyr`, `ggplot2`, and `lme4`
+  load, then retain the output from `r/02_r_solution.R` as a fallback.
+- Test the selected Colab link. Test the Posit copy flow only when Posit is part of the route.
 
-The workshop starts only after participants can access an AI assistant, Colab, and Posit. A
+The workshop starts only after participants can access an AI assistant and the selected Colab
+notebook. When Posit is part of the route, participants also need a permanent Posit copy. A
 participant without access pairs with another participant rather than waiting for a local setup.
 
 ## Route decision
@@ -24,12 +24,12 @@ participant without access pairs with another participant rather than waiting fo
 At minute 5, ask who has previously used an AI assistant to write and run research code.
 
 - **Core route:** use `SCRIPT_1HR.md` when participants need the basic prompt-to-code workflow.
-- **Experienced-room route:** use the advanced recovery-prediction branch when the room already
-  manages basic R or Python prompting.
-- **Mixed room:** retain the core route on the shared display. Experienced participants complete
-  one advanced task independently and return with a question or output.
+- **Experienced-room route:** use `SCRIPT_ADVANCED_45.md` when the room already manages basic
+  R or Python prompting.
+- **Mixed room:** use the advanced route on the shared display and assign the core checkpoints
+  in its mixed-room table to newer participants.
 
-Do not combine the two routes in a one-hour session.
+Do not use the shared display to narrate two full analyses in a one-hour session.
 
 ## Intervention order when someone is stuck
 

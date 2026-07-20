@@ -5,8 +5,8 @@ Python, and Posit Cloud for R. You share the primary display. Keep this file, th
 and a timer on the private display.
 
 The core route below is for participants new to AI-assisted coding. At minute 5, move an
-experienced room to [ADVANCED_PATHS.md](ADVANCED_PATHS.md). Do not attempt both routes in one
-hour.
+experienced room to [SCRIPT_ADVANCED_45.md](SCRIPT_ADVANCED_45.md). For a mixed room, use the
+parallel core checkpoints in that script. Do not attempt two full routes in one hour.
 
 ## Before participants arrive
 
@@ -37,9 +37,9 @@ transcripts, or identifiers into an AI service.
 > Raise your hand if you have already used an AI assistant to write and run R or Python code for a
 > research analysis.
 
-**DO:** If most participants raise a hand, open `ADVANCED_PATHS.md` and use the experienced-room
-route. Otherwise continue. Ask everyone to confirm that Colab displays `Ready.` and Posit displays
-`r/02_r_starter.R`.
+**DO:** If most participants raise a hand, open `SCRIPT_ADVANCED_45.md` and use the experienced-
+room route. If the room is mixed, use its mixed-room table. Otherwise continue. Ask everyone to
+confirm that Colab displays `Ready.` and Posit displays `r/02_r_starter.R`.
 
 ## 0:05-0:10 | Specify the request
 

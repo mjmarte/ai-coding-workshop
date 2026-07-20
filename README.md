@@ -2,8 +2,9 @@
 
 Python and R. Browser-based. Designed for researchers who are new to AI-assisted coding.
 
-The canonical live format is one hour. [SCRIPT_1HR.md](SCRIPT_1HR.md) supplies the core route;
-[ADVANCED_PATHS.md](ADVANCED_PATHS.md) supplies alternatives for experienced participants.
+The canonical live format is one hour. [SCRIPT_1HR.md](SCRIPT_1HR.md) supplies the core route.
+[SCRIPT_ADVANCED_45.md](SCRIPT_ADVANCED_45.md) supplies the primary 45-minute advanced route,
+with a mixed-room table for newer participants.
 Participants practice the following:
 
 - an NLP pipeline that turns picture-description transcripts into quantitative measures (Python)
@@ -65,6 +66,7 @@ r/
 guardrails/     review resources, a privacy guide, a statistics checklist, and project rules.
 PROMPTS.md      reusable prompts and verification checks.
 SCRIPT_1HR.md   one-hour hands-on facilitator script
+SCRIPT_ADVANCED_45.md primary 45-minute advanced recovery-prediction script
 ADVANCED_PATHS.md route choices and facilitator language for experienced rooms
 SCRIPT.md       expanded facilitator notes and contingencies
 FACILITATOR.md  setup, route selection, and recovery procedures

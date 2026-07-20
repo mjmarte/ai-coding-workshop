@@ -20,6 +20,9 @@ The facilitator may assign the [advanced recovery-prediction notebook](https://c
 
 ## 3. R in Posit Cloud
 
+Complete this step for the core route or when the facilitator assigns a core checkpoint in a mixed
+room. The primary advanced recovery-prediction route uses only Colab.
+
 1. Create or sign in to a [Posit Cloud](https://posit.cloud) account.
 2. Open [the workshop project](https://posit.cloud/content/12671685).
 3. Select "Save a Permanent Copy."
