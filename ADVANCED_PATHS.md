@@ -1,9 +1,9 @@
 # Advanced workshop routes
 
-The acute-to-chronic recovery-prediction route is the primary option for a room that already
-uses AI to write and run research code. Its complete 45-minute facilitator script is
-[SCRIPT_ADVANCED_45.md](SCRIPT_ADVANCED_45.md). The shorter branches below are alternatives,
-not material to compress into the same session.
+The mixed-effects route is the primary option for a room that already uses AI to write and run
+research code. Its complete 45-minute facilitator script is
+[SCRIPT_ADVANCED_45.md](SCRIPT_ADVANCED_45.md). The ML notebook is a short extension after that
+route, not material to compress into the same opening session.
 
 ## Make the route decision at minute 5
 
@@ -11,9 +11,9 @@ Ask: "Have you already used an AI assistant to write and run R or Python code fo
 research?"
 
 - If most hands are down, use the core route in [SCRIPT_1HR.md](SCRIPT_1HR.md).
-- If most hands are up, use [SCRIPT_ADVANCED_45.md](SCRIPT_ADVANCED_45.md). It includes Tasks A1
-  through A4, with predictor timing, resampling, held-out predictions, and output-constrained
-  writing.
+- If most hands are up, use [SCRIPT_ADVANCED_45.md](SCRIPT_ADVANCED_45.md). It includes a
+  categorical mixed-effects model, an inappropriate independent-rows comparison, a continuous-
+  time model, and output-constrained writing.
 - If experience is mixed, use the mixed-room table in `SCRIPT_ADVANCED_45.md`. The advanced route
   remains on the shared screen; newer participants complete the specified core checkpoints.
 
@@ -57,7 +57,8 @@ Say:
 > The synthetic cohort defines an acute-to-chronic prediction question. Only variables available
 > at the acute assessment enter the predictor matrix. The 12-month WAB-AQ is the outcome.
 
-Use [SCRIPT_ADVANCED_45.md](SCRIPT_ADVANCED_45.md), which runs Tasks A1 through A4 in sequence.
+Use [SCRIPT_ML_EXTENSION.md](SCRIPT_ML_EXTENSION.md) after the mixed-effects route. Run Tasks A1,
+A2, and A4; use A3 only when an additional 10 minutes are available.
 
 Debrief question: "What does a lower cross-validated mean absolute error establish here, and
 what does it not establish?"

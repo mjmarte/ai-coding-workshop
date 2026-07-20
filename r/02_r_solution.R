@@ -139,6 +139,12 @@ ggplot(long, aes(x = timepoint, y = wab_aq, group = participant_id)) +
     plot.caption = element_text(colour = "#666666", size = 8)
   )
 
+# Continuous-time alternative. This model estimates the mean WAB-AQ difference per month
+# under a linear time-course assumption. Two observed visits cannot test that assumption.
+month_model <- lmer(wab_aq ~ months_post_onset + (1 | participant_id), data = long)
+summary(month_model)
+confint(month_model, method = "Wald")
+
 
 # ---- 7. Fact-check exercise ------------------------------------------------
 # Request a Results paragraph for model m1, then compare each reported value with:

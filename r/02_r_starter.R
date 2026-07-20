@@ -198,6 +198,33 @@ dir.create("outputs", showWarnings = FALSE)
 # dependence structures.
 
 
+#### Task 6B (advanced) - Treat time as continuous -------------------------
+#
+# GOAL: compare the categorical acute-versus-chronic model with a model that represents
+# months since onset as a continuous predictor.
+#
+# PROMPT:
+# -----------------------------------------------------------------------------
+# Starting with the `long` data frame from the previous task, fit a second linear mixed-effects
+# model named `month_model`. Predict wab_aq from months_post_onset and include a random intercept
+# for participant_id. Show the model summary and Wald confidence intervals.
+#
+# Then explain, in four short bullets, the difference between `long_model`, which uses the
+# categorical `timepoint` variable, and `month_model`, which uses continuous months_post_onset.
+# State the estimand for each model, the time-course assumption made by each, and why the latter
+# model does not establish that recovery is linear between the two observed visits.
+# Give code first, then the four bullets.
+# -----------------------------------------------------------------------------
+
+# YOUR CODE:
+
+
+
+# CHECKPOINT: the estimated change is about +0.64 WAB points per month, with a Wald 95% interval
+# from 0.39 to 0.89. This is a compact description of the two-visit synthetic data, not evidence
+# that recovery follows a linear monthly trajectory.
+
+
 # Task 7 - Fact-check the result statement ----------------------------------
 #
 # GOAL: trace each result sentence to the displayed model output.

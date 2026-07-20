@@ -1,174 +1,206 @@
-# Advanced recovery-prediction workshop: 45-minute facilitator script
+# Advanced mixed-effects workshop: 45-minute facilitator script
 
 Use this as the primary route when the room already knows the basic prompt-to-code workflow.
-Participants work in the advanced Colab notebook and an AI chat. The route does not use Posit.
-Keep this file, `python/02_advanced_recovery_solution.ipynb`, and a timer on the private display.
+Participants work in Posit Cloud, `r/02_r_starter.R`, and an AI chat. Keep this file,
+`r/02_r_solution.R`, and a timer on the private display.
 
 ## Before the session
 
-- Share the advanced Colab notebook, a new AI conversation, and `PROMPTS.md`.
-- Run the notebook setup cell and confirm `Ready.`.
-- On the private display, run the advanced solution once. Retain the output from Tasks A2 and A3.
-- Participants open the [advanced notebook](https://colab.research.google.com/github/mjmarte/ai-coding-workshop/blob/main/python/02_advanced_recovery_starter.ipynb), run setup, and open an AI chat.
+- Share an AI chat, the Posit Cloud project, and `PROMPTS.md`.
+- Open `r/02_r_starter.R` in the shared project. Participants make a permanent copy before editing.
+- Confirm that `readr`, `dplyr`, `ggplot2`, and `lme4` load, then run `r/02_r_solution.R` once on
+  the private display.
+- Keep the advanced Colab notebook closed. It is an ML extension after the mixed-effects route,
+  not the opening exercise.
 
-The cohort is synthetic. The workshop demonstrates an analysis workflow, not a clinical prediction
-model or a recommendation for patient-level decisions.
+The data are synthetic. The route demonstrates how model structure follows the repeated-measures
+design; it does not estimate clinical recovery or a treatment effect.
 
-## 0:00-0:04 | State the prediction question
+## 0:00-0:05 | Establish the model question
 
-**ON SCREEN:** advanced notebook header and Task A1.
-
-**SAY:**
-
-> The question is deliberately narrow. We will estimate a synthetic 12-month WAB-AQ from data
-> available at the acute assessment. The time boundary determines the predictor matrix. A variable
-> measured at 12 months cannot enter a model intended to predict the 12-month outcome.
->
-> The analysis has three linked requirements. We first define the outcome and predictor sets. We
-> then estimate performance without allowing held-out observations to influence preprocessing or
-> model fitting. Finally, we inspect individual held-out predictions and limit the written claim to
-> what the resampling output supports.
-
-**DO:** Ask participants to confirm that the notebook displays `Ready.`. Tell them to paste prompts
-into a separate AI chat, then paste returned code only into the empty notebook cells.
-
-## 0:04-0:10 | Task A1: define the outcome and predictor sets
-
-**ON SCREEN:** Task A1 prompt.
-
-**DO:** Participants copy the prompt into their AI chat, paste returned code into the empty cell,
-and run it. Check that the code creates `recovery`, `outcome`, `clinical_features`, and
-`multimodal_features`.
-
-**SAY, AFTER THE CELL RUNS:**
-
-> The dataset contains 90 synthetic participants, one row per participant, with no missing values.
-> `outcome_wab_aq_12m` is the outcome. The clinical set contains age, education, acute WAB-AQ, and
-> an acute discourse score. The second set adds lesion and disconnection measures available at the
-> same acute assessment.
->
-> Sex is retained for the descriptive error audit in Task A3. Its exclusion from these predictor
-> sets is a workshop decision, not evidence that sex is irrelevant to an actual recovery model.
-> In a study, predictor selection follows the clinical question, measurement time, sample size,
-> and an analysis plan defined before model fitting.
-
-**CHECK:** `participant_id` and the 12-month outcome do not appear in either predictor list.
-
-## 0:10-0:25 | Task A2: compare two resampled models
-
-**ON SCREEN:** Task A2 prompt, then the returned code before it is run.
+**ON SCREEN:** Posit, `r/02_r_starter.R`, Task 6.
 
 **SAY:**
 
-> The comparison is between predictor sets, not between individual variables. The clinical model
-> uses acute clinical and discourse information. The clinical-plus-imaging model adds acute lesion
-> and disconnection measures. The model is fit repeatedly on one portion of the synthetic cohort
-> and evaluated on records omitted from that fit.
+> The analytic question is whether WAB-AQ differs between acute and chronic observations in the
+> same 30 participants. The file has 60 rows, but the independent units are 30 people. The model
+> must represent the dependence introduced when each person contributes two observations.
 >
-> Inspect the code before running it. The `Pipeline` must contain imputation, scaling, and Ridge
-> regression. The repeated cross-validation object must appear in `cross_validate`. If scaling
-> occurs before resampling, information from held-out participants enters the training procedure.
+> The route proceeds in sequence. We first fit a model that represents participant-level
+> dependence. We then fit an ordinary linear model that omits it. Finally, we compare a categorical
+> timepoint model with a continuous-time model and identify the assumption each one adds.
 
-**DO:** Participants send the Task A2 prompt, paste returned code, and run it. While it runs, ask:
+**DO:** Ask participants to open the Posit project, select "Save a Permanent Copy," open
+`r/02_r_starter.R`, and confirm the `data/` directory exists:
 
-> Which operation would leak information if it were completed before the data were split into
-> training and held-out folds?
+```r
+stopifnot(dir.exists("data"))
+```
 
-**SAY, AFTER THE TABLE APPEARS:**
+## 0:05-0:14 | Task 6: categorical timepoint model
 
-> In the supplied synthetic cohort, the clinical model has mean absolute error of 5.25 WAB points
-> across repeated folds, with an SD of 0.71. The clinical-plus-imaging model has mean absolute
-> error of 4.85, with an SD of 0.84. On average, the second predictor set is 0.40 WAB points closer
-> to the synthetic 12-month outcome under this resampling procedure.
->
-> Mean R-squared is 0.81 for the clinical model and 0.82 for the clinical-plus-imaging model. The
-> SDs describe variation across the repeated resampling folds. They are not 95% confidence
-> intervals, and the table does not establish that any individual imaging variable is causally
-> responsible for the difference.
+**ON SCREEN:** Task 6 prompt, then AI chat.
 
-**CHECK:** `cv_summary` contains two rows, with MAE and R-squared reported as mean and SD.
-
-## 0:25-0:36 | Task A3: inspect held-out predictions
-
-**ON SCREEN:** Task A3 prompt.
+**DO:** Participants copy the complete Task 6 prompt into an AI chat. Before running returned
+code, check that it (i) reads the file into `long`, (ii) creates `long_model`, (iii) uses `lmer`,
+and (iv) includes `(1 | participant_id)`.
 
 **SAY:**
 
-> The cross-validation table summarizes average performance. It does not show where predictions
-> depart from observations or whether errors cluster in a descriptive subgroup. We therefore make
-> one held-out prediction per participant and inspect the errors.
->
-> This five-fold out-of-fold display is a diagnostic view, not a second estimate that must equal
-> the repeated cross-validation summary from Task A2. The procedures differ.
+> The fixed effect for `timepointchronic` estimates the mean chronic-minus-acute WAB-AQ difference.
+> The random intercept allows each participant to have a different baseline level. It does not
+> assert that every participant follows the same observed trajectory.
 
-**DO:** Participants run Task A3. Ask them to identify the identity line in the left panel and one
-point that falls far from it.
+**DO:** Paste the returned code below Task 6, select only that code, and run it. The prompt also
+creates a participant-trajectory plot.
 
 **SAY, AFTER THE OUTPUT APPEARS:**
 
-> The overall out-of-fold MAE is 4.84 WAB points. Each plotted prediction was generated without
-> fitting that participant. The error summary gives 37 synthetic female participants with mean
-> absolute error of 4.13 and 53 synthetic male participants with mean absolute error of 5.34.
-> Those values are a descriptive audit. They do not establish a subgroup difference, fairness, or
-> transportability.
-
-**CHECK:** `oof_pred` has 90 values and the left panel includes the identity line.
-
-## 0:36-0:42 | Task A4: constrain the written result
-
-**ON SCREEN:** `cv_summary`, then the AI chat.
-
-**DO:** Copy the table into the Task A4 prompt. Participants compare the response against the
-table before accepting it.
-
-**SAY:**
-
-> The result statement may report the resampled MAE and R-squared values in the displayed table.
-> It may state that the clinical-plus-imaging model had lower resampled MAE in this synthetic
-> development exercise. It may not claim clinical usefulness, external validation, calibration,
-> causal contribution, or readiness for deployment.
-
-**IF THE RESPONSE ADDS A CLAIM:**
-
-> Delete the unsupported clause. Ask the assistant to rewrite using only the displayed table and
-> the stated scope of the data.
-
-## 0:42-0:45 | Close
-
-**SAY:**
-
-> The prediction workflow had three dependencies. Predictor timing came first. Resampling then
-> protected the performance estimate from training-set optimism. The final prose was restricted to
-> the output and to the scope of a synthetic development exercise.
+> The checked synthetic-data solution estimates a chronic-minus-acute difference of 7.060 WAB
+> points, with a standard error of 1.363, a t value of 5.178, and a Wald 95% interval from 4.388 to
+> 9.732. The interval describes uncertainty around the mean change represented by this model.
 >
-> In an actual study, the next requirements would include a prespecified predictor set, an
-> appropriate cohort, external evaluation, calibration assessment, and a clinical decision context.
+> `lme4::lmer` does not return a p value in this output. Do not ask an AI assistant to supply one
+> from memory or to convert the t value into a result the model did not report.
 
-**DO:** Ask participants to write one constraint from their own project that must appear in a
-future model prompt, for example the time at which a predictor is measured, the independent unit,
-or the required held-out evaluation.
+## 0:14-0:21 | Compare the independent-rows model
 
-## Optional extension after minute 45
+**ON SCREEN:** Posit Console.
 
-Use Task A5 only when time remains and participants want to inspect a repository with a coding
-agent. The agent task is read-only and does not replace the model-development route above.
+**DO:** Run:
+
+```r
+summary(lm(wab_aq ~ timepoint, data = long))
+```
+
+**SAY:**
+
+> The two models estimate the same mean acute-to-chronic difference because both use the same
+> timepoint means. Their uncertainty differs because only the mixed-effects model represents the
+> pairing within participant.
+>
+> Here, the ordinary linear model returns a standard error of about 3.62 and p = .056. The mixed
+> model returns a standard error of 1.36. Neither output is interpreted by asking which model is
+> more elaborate. The study design determines which dependence structure belongs in the formula.
+
+**ASK:**
+
+> What changed between the two models: the average timepoint difference, or the assumption about
+> the 60 records?
+
+**PAUSE, THEN SAY:**
+
+> The assumption about the records. The 60 observations are not measurements from 60 unrelated
+> people.
+
+## 0:21-0:31 | Task 6B: continuous time model
+
+**ON SCREEN:** Task 6B prompt.
+
+**SAY:**
+
+> The categorical model estimates one contrast: chronic relative to acute. It does not state what
+> occurs during the interval between those visits. We can instead model months since onset as a
+> continuous predictor, but that model introduces a new assumption: WAB-AQ changes linearly with
+> time over the observed range.
+
+**DO:** Participants copy the Task 6B prompt, paste returned code below its `# YOUR CODE:` line,
+and run it. Check that the model is named `month_model` and includes
+`wab_aq ~ months_post_onset + (1 | participant_id)`.
+
+**SAY, AFTER THE OUTPUT APPEARS:**
+
+> The continuous-time model estimates an increase of 0.641 WAB points per month, with a Wald 95%
+> interval from 0.394 to 0.889. This is a model-based description of these two-visit synthetic
+> records. It does not establish that recovery follows a linear monthly course, because the data do
+> not observe the intervening months.
+
+**ASK:**
+
+> Which model answers the question, "What is the mean difference between the acute and chronic
+> visits?" Which model answers the question, "What linear association with months since onset is
+> imposed by the model?"
+
+**PAUSE, THEN SAY:**
+
+> The categorical model answers the first question. The continuous model answers the second.
+
+## 0:31-0:38 | Read the formula as an analysis plan
+
+**ON SCREEN:** AI chat and the two model formulas.
+
+**DO:** Send this prompt:
+
+```text
+I have repeated WAB-AQ observations from 30 participants at acute and chronic visits.
+
+Model 1: lmer(wab_aq ~ timepoint + (1 | participant_id), data = long)
+Model 2: lmer(wab_aq ~ months_post_onset + (1 | participant_id), data = long)
+
+Explain, in a compact table, the estimand, time assumption, and primary limitation of each model.
+Do not choose a model without first stating the research question it answers. Do not infer a p
+value that is not in the output.
+```
+
+**SAY:**
+
+> Read the answer against the formulas, not against its fluency. The relevant distinction is not
+> categorical versus continuous coding in the abstract. It is whether the estimand and time-course
+> assumption answer the stated question.
+
+## 0:38-0:43 | Fact-check the result statement
+
+**ON SCREEN:** `summary(long_model)`, `confint(long_model, method = "Wald")`, and AI chat.
+
+**DO:** Copy the output into this prompt:
+
+```text
+I fit a linear mixed-effects model of WAB-AQ predicted by timepoint, with a random intercept for
+participant ID. Here is the fixed-effect and Wald confidence-interval output:
+
+[PASTE OUTPUT]
+
+Write two Results sentences. Report only values present in the output. State what the timepoint
+estimate represents and that the model accounts for repeated observations within participant. Do
+not invent a p value, R-squared, F statistic, degrees of freedom, or a treatment effect.
+```
+
+**SAY:**
+
+> A suitable statement reports the chronic-minus-acute estimate and its Wald interval, and it
+> names the repeated-measures structure. Any added p value, causal language, or treatment claim is
+> removed.
+
+## 0:43-0:45 | Close and direct the ML extension
+
+**SAY:**
+
+> The model did not begin with R syntax. It began with the repeated-measures structure. The
+> categorical model and continuous-time model then answered different questions because they made
+> different assumptions about time.
+>
+> The optional ML extension applies the same discipline to acute-to-chronic prediction: define the
+> time boundary, protect held-out observations during resampling, and restrict the claim to the
+> evaluation output.
+
+**DO:** Direct participants who want the extension to [SCRIPT_ML_EXTENSION.md](SCRIPT_ML_EXTENSION.md)
+and the advanced recovery-prediction notebook. Ask everyone else to name one design feature from
+their own project that must appear in a model prompt.
 
 ## Mixed-room version within a 60-minute workshop
 
-Keep the advanced route on the shared display when it serves most participants. Newer participants
-work in the core notebook while the advanced group proceeds; do not attempt to narrate two full
-analyses at once.
+Use the mixed-effects route on the shared screen when it serves most participants. Newer
+participants complete a small core sequence in parallel; do not attempt two full narrated routes.
 
 | Minutes | Shared screen and advanced participants | Newer participants |
 |---:|---|---|
-| 0-5 | Opening, data boundary, and prompt requirements | Same opening |
-| 5-12 | Advanced Task A1 | Core Python Task 1: load, inspect, count groups |
-| 12-27 | Advanced Task A2 | Core Python Task 3: construct transparent text measures |
-| 27-38 | Advanced Task A3 | Core R Task 1: join participant and feature files |
-| 38-45 | Advanced Task A4 | Compare their output with the Task 1 checkpoint |
-| 45-55 | Advanced close and questions | Core R Task 6 prompt, paired with an advanced participant or facilitator check |
-| 55-60 | Whole-room close: identify one design constraint | Same |
+| 0-5 | Repeated-measures question and Posit setup | Same opening and setup |
+| 5-14 | R Task 6 categorical mixed model | Core Python Task 1: load, inspect, count groups |
+| 14-21 | Compare the ordinary linear model | Core Python Task 3: construct text measures |
+| 21-31 | R Task 6B continuous-time mixed model | Core R Task 1: join participant and feature files |
+| 31-43 | Formula audit and output-constrained writing | Compare output with the Task 1 checkpoint; begin Task 6 prompt if ready |
+| 43-55 | Whole-room fact-check and questions | Join the whole-room fact-check |
+| 55-60 | Close: state one design constraint | Same |
 
-For the mixed route, the core participants need not complete every code cell. Their required
-outputs are (i) the 60-row, 8-column Python table, (ii) the four transcript measures, and (iii)
-the 60-row, 14-column R join. The repeated-measures prompt is the bridge to the whole-room close.
+The core participants' required outputs are (i) 60 rows and 8 columns after Python loading,
+(ii) four text measures added to `df`, and (iii) 60 rows and 14 columns after the R join.

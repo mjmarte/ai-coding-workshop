@@ -12,16 +12,19 @@ any content with an AI tool.
 
 ## 2. Python in Google Colab
 
+Complete this step for the core Python route or the ML extension. The primary advanced
+mixed-effects route begins in Posit Cloud.
+
 1. Sign in at [Google Colab](https://colab.research.google.com).
 2. Open the link supplied by the facilitator: [core Python notebook](https://colab.research.google.com/github/mjmarte/ai-coding-workshop/blob/main/python/01_python_starter.ipynb).
 3. Run the first cell and wait for `Ready.`.
 
-The facilitator may assign the [advanced recovery-prediction notebook](https://colab.research.google.com/github/mjmarte/ai-coding-workshop/blob/main/python/02_advanced_recovery_starter.ipynb). Do not open it unless asked.
+The facilitator may assign the [advanced recovery-prediction notebook](https://colab.research.google.com/github/mjmarte/ai-coding-workshop/blob/main/python/02_advanced_recovery_starter.ipynb) as an ML extension. Do not open it unless asked.
 
 ## 3. R in Posit Cloud
 
-Complete this step for the core route or when the facilitator assigns a core checkpoint in a mixed
-room. The primary advanced recovery-prediction route uses only Colab.
+Complete this step for the core route, the primary advanced mixed-effects route, or a mixed-room
+core checkpoint. The ML extension uses Colab after the primary route.
 
 1. Create or sign in to a [Posit Cloud](https://posit.cloud) account.
 2. Open [the workshop project](https://posit.cloud/content/12671685).
