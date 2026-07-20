@@ -7,7 +7,7 @@ workshop is that you can practice AI-assisted coding without ever pasting
 protected health information into a chatbot.
 
 Run:  python data/make_data.py
-Makes: transcripts.csv, transcripts_long.csv, features.csv
+Makes: transcripts.csv, transcripts_long.csv, features.csv, recovery_prediction.csv
 """
 
 import numpy as np
@@ -157,6 +157,54 @@ def build():
     return baseline, long
 
 
+def build_recovery_prediction():
+    """Synthetic acute-stroke cohort for the advanced prediction exercise.
+
+    One row represents one participant. All predictors are available at the
+    acute assessment; the 12-month WAB-AQ is the outcome and must never enter
+    the predictor matrix. The values are illustrative, not a clinical model.
+    """
+    rng = np.random.default_rng(20260714)
+    n = 90
+    severity = np.clip(rng.beta(2.2, 2.0, n), 0.04, 0.96)
+
+    age = np.clip(rng.normal(64, 10, n), 38, 86).round().astype(int)
+    education = np.clip(rng.normal(15, 2.8, n), 8, 22).round().astype(int)
+    sex = rng.choice(["F", "M"], n)
+    acute_wab = np.clip(100 - 74 * severity + rng.normal(0, 5.5, n), 18, 98).round(1)
+    acute_discourse = np.clip(10 - 8.5 * severity + rng.normal(0, 0.9, n), 0, 10).round(1)
+    lesion_volume = np.clip(12 + 185 * severity + rng.normal(0, 24, n), 3, 300).round(1)
+    cortical_burden = np.clip(8 + 68 * severity + rng.normal(0, 9, n), 0, 100).round(1)
+    dorsal_disconnection = np.clip(0.03 + 0.78 * severity + rng.normal(0, 0.10, n), 0, 1).round(3)
+    ventral_disconnection = np.clip(0.04 + 0.58 * severity + rng.normal(0, 0.12, n), 0, 1).round(3)
+
+    outcome = (
+        20
+        + 0.46 * acute_wab
+        + 1.25 * acute_discourse
+        + 0.20 * education
+        - 0.10 * age
+        - 0.035 * lesion_volume
+        - 5.5 * dorsal_disconnection
+        + rng.normal(0, 6.5, n)
+    )
+    outcome = np.clip(outcome, 20, 100).round(1)
+
+    return pd.DataFrame({
+        "participant_id": [f"R{i:03d}" for i in range(1, n + 1)],
+        "age": age,
+        "sex": sex,
+        "education_years": education,
+        "acute_wab_aq": acute_wab,
+        "acute_discourse_score": acute_discourse,
+        "lesion_volume_ml": lesion_volume,
+        "cortical_lesion_pct": cortical_burden,
+        "dorsal_disconnection_pct": dorsal_disconnection,
+        "ventral_disconnection_pct": ventral_disconnection,
+        "outcome_wab_aq_12m": outcome,
+    })
+
+
 # -------------------------------------------------- features (the Python answer)
 def extract_features(df):
     """Must match python/01_python_starter.ipynb exactly, so attendees can
@@ -192,14 +240,19 @@ def extract_features(df):
 
 if __name__ == "__main__":
     baseline, long = build()
+    recovery = build_recovery_prediction()
+    feats = extract_features(baseline)
+
+    # Do not replace any derived file until feature extraction has completed.
+    # A missing NLP dependency should leave the existing teaching dataset intact.
     baseline.to_csv("data/transcripts.csv", index=False)
     long.to_csv("data/transcripts_long.csv", index=False)
-
-    feats = extract_features(baseline)
+    recovery.to_csv("data/recovery_prediction.csv", index=False)
     feats.to_csv("data/features.csv", index=False)
 
     chk = baseline.merge(feats, on="participant_id")
     print(f"{len(baseline)} baseline rows, {len(long)} longitudinal rows")
+    print(f"{len(recovery)} acute-to-12-month prediction rows")
     print("\nCorrelations with WAB-AQ (should be strong — that's the point):")
     for c in ["content_word_ratio", "type_token_ratio", "n_words", "filler_rate"]:
         print(f"  {c:22s} r = {chk['wab_aq'].corr(chk[c]):+.2f}")

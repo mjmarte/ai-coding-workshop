@@ -23,22 +23,29 @@ import os, sys, subprocess
 
 REPO = "{REPO}"   # facilitator fills this in before the workshop
 
-# 1. Download the workshop files (only if we don't have them yet)
-if not os.path.exists("ai-coding-workshop") and not os.path.exists("data"):
-    r = subprocess.run(["git", "clone", "-q", f"https://github.com/{{REPO}}.git"])
-    if r.returncode != 0:
-        raise SystemExit(
-            "Could not download the workshop files. This is almost always an "
-            "incorrect GitHub link — tell the facilitator.")
-if os.path.isdir("ai-coding-workshop"):
+# 1. Download the workshop files, or update a copy from an earlier session.
+if os.path.isdir(".git"):
+    r = subprocess.run(["git", "pull", "--ff-only", "-q"])
+elif os.path.isdir("ai-coding-workshop"):
     os.chdir("ai-coding-workshop")
+    r = subprocess.run(["git", "pull", "--ff-only", "-q"])
+elif not os.path.exists("data"):
+    r = subprocess.run(["git", "clone", "-q", f"https://github.com/{{REPO}}.git"])
+    if r.returncode == 0:
+        os.chdir("ai-coding-workshop")
+else:
+    r = subprocess.run(["git", "status"], capture_output=True)
+if r.returncode != 0:
+    raise SystemExit(
+        "Could not download or update the workshop files. Check the GitHub link "
+        "and tell the facilitator.")
 
 # 2. Download the small English model spaCy needs for Task 4
 subprocess.run([sys.executable, "-m", "spacy", "download", "en_core_web_sm", "-q"])
 os.makedirs("outputs", exist_ok=True)
 
 # 3. Confirm the data is present before proceeding
-missing = [f for f in ("data/transcripts.csv", "data/features.csv")
+missing = [f for f in ("data/transcripts.csv", "data/features.csv", "data/recovery_prediction.csv")
            if not os.path.exists(f)]
 if missing:
     raise SystemExit(f"Setup incomplete — missing {{missing}}. Ask the facilitator.")
@@ -254,13 +261,15 @@ print(corrs)
         "`type_token_ratio` is nearly flat — this returns in the R portion.",
     ),
     (
-        "Task 7 (stretch) — Semantic similarity to a reference description",
+        "Task 7 (advanced) — Narrative-content proxy against a reference description",
         """
-**Goal:** score how closely each transcript resembles a "complete" description of the
-picture — a coarse proxy for semantic relevance / idea density.
+**Goal:** score lexical overlap between each transcript and a complete description of the
+picture. This is a transparent proxy for discourse content, not a validated main-concept
+analysis.
 
-TF-IDF + cosine similarity requires no downloads and rests on the same principle
-(text as vector, compare vectors) that underlies modern embeddings.
+TF-IDF plus cosine similarity requires no downloads and illustrates one way to compare
+texts as vectors. It is not interchangeable with an embedding model or a clinician-scored
+discourse measure.
 """,
         """I want a measure of how semantically close each transcript is to a complete
 description of the scene.
@@ -295,13 +304,14 @@ print(df.groupby("group")["semantic_similarity"].mean().round(3))
 aph = df.query("group == 'aphasia'")
 print("r with WAB-AQ:", round(aph["semantic_similarity"].corr(aph["wab_aq"]), 2))
 ''',
-        "Controls ≈ 0.50, aphasia ≈ 0.24, and r ≈ **+0.82** with WAB-AQ — "
-        "a strong measure from roughly six lines of code.",
+        "Controls ≈ 0.50, aphasia ≈ 0.24, and r ≈ **+0.82** with WAB-AQ. "
+        "Interpret this as lexical overlap with this reference, not as validated semantic scoring.",
     ),
     (
-        "Task 8 (stretch) — Can we classify group from language alone?",
+        "Task 8 (advanced) — Development-only classification from language measures",
         """
-**Goal:** a cross-validated logistic regression predicting group from the five measures.
+**Goal:** a resampled logistic-regression classifier predicting group from five language
+measures. This is a development exercise, not diagnostic-model validation.
 
 An AI assistant will readily produce a model with **no cross-validation** and a
 suspiciously high accuracy, without flagging the omission.
@@ -309,29 +319,35 @@ suspiciously high accuracy, without flagging the omission.
         """Fit a logistic regression that predicts `group` (aphasia = 1, control = 0) from these
 five features: n_words, type_token_ratio, mean_word_length, content_word_ratio, filler_rate.
 
-Important: I want an honest estimate of accuracy, not the training accuracy. Use
-5-fold cross-validation via cross_val_score, and standardise the features inside a
-Pipeline so no information leaks across folds.
+Important: I want a resampled estimate, not training accuracy. Use repeated stratified
+5-fold cross-validation. Standardise the features inside a Pipeline so no information
+leaks across folds. Report balanced accuracy and ROC-AUC, each as mean (SD), and state
+the majority-class chance level.
 
 Print the mean CV accuracy, the standard deviation, and the chance level.""",
         '''
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import RepeatedStratifiedKFold, cross_validate
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
 X = df[feature_cols]
 y = (df["group"] == "aphasia").astype(int)
 
-clf = make_pipeline(StandardScaler(), LogisticRegression())
-scores = cross_val_score(clf, X, y, cv=5, scoring="accuracy")
+clf = make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000))
+cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=10, random_state=202607)
+scores = cross_validate(
+    clf, X, y, cv=cv,
+    scoring={"balanced_accuracy": "balanced_accuracy", "roc_auc": "roc_auc"},
+)
 
-print(f"5-fold CV accuracy: {scores.mean():.2f} (+/- {scores.std():.2f})")
+for metric in ["balanced_accuracy", "roc_auc"]:
+    values = scores[f"test_{metric}"]
+    print(f"{metric}: {values.mean():.2f} (SD {values.std():.2f})")
 print("Chance level:", round(max(y.mean(), 1 - y.mean()), 2))
 ''',
-        "About **0.88** against a chance level of 0.50. "
-        "Ask the AI: *'what could make this accuracy misleadingly high?'* "
-        "It gives a good answer — but only when prompted.",
+        "Performance should exceed a 0.50 majority-class baseline. The repeated folds are not "
+        "an external validation cohort. Ask: *'Which claims would require an independent cohort?'*",
     ),
     (
         "Task 9 — Hand off to R",

@@ -2,7 +2,9 @@
 
 **Python + R. No prior programming experience required. Nothing to install.**
 
-Over three hours, participants build the following with AI assistance:
+The full curriculum runs for three hours. [SCRIPT_1HR.md](SCRIPT_1HR.md) provides the
+one-hour core route, with optional fast-track branches for experienced participants.
+Across the full curriculum, participants build the following with AI assistance:
 
 - an NLP pipeline that turns picture-description transcripts into quantitative measures (Python)
 - a statistical model of aphasia severity, and a publication-ready figure (R)
@@ -30,6 +32,8 @@ Do it the day before, not in the first ten minutes of the session.
 
 **Part 1 — Python:** [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mjmarte/ai-coding-workshop/blob/main/python/01_python_starter.ipynb)
 
+**Advanced Python (optional):** [acute-to-12-month recovery prediction](https://colab.research.google.com/github/mjmarte/ai-coding-workshop/blob/main/python/02_advanced_recovery_starter.ipynb). This is a synthetic development exercise in leakage-safe resampling, not a clinical prediction model. See [ADVANCED_PATHS.md](ADVANCED_PATHS.md) for when to use it.
+
 **Part 2 — R:** open [posit.cloud/content/12671685](https://posit.cloud/content/12671685), click
 **Save a Permanent Copy**, then open `r/02_r_starter.R`.
 
@@ -41,6 +45,7 @@ Do it the day before, not in the first ten minutes of the session.
 data/
   transcripts.csv        60 people (30 control, 30 aphasia), one picture description each
   transcripts_long.csv   the 30 aphasia participants at 2 timepoints (recovery)
+  recovery_prediction.csv  90 synthetic acute-stroke participants for advanced prediction
   features.csv           NLP measures, pre-computed — so Part 2 works even if you
                          never finished Part 1
   make_data.py           exactly how the synthetic data was made. Read it.
@@ -49,6 +54,8 @@ data/
 python/
   01_python_starter.ipynb    <- you work in this one
   01_python_solution.ipynb   <- reference solution
+  02_advanced_recovery_starter.ipynb  <- optional prediction extension
+  02_advanced_recovery_solution.ipynb <- reference solution
 
 r/
   02_r_starter.R             <- you work in this one
@@ -59,6 +66,8 @@ guardrails/     sourced rules, a stats rubric, a privacy guide, a review checkli
                 and a ready-to-paste project rules file. Reference for applying
                 these practices to your own research.
 PROMPTS.md      one-page cheat sheet summarizing the workshop's core prompts and rules.
+SCRIPT_1HR.md   one-hour hands-on facilitator script
+ADVANCED_PATHS.md route choices and facilitator language for experienced rooms
 SCRIPT.md       a word-for-word ~50-minute spoken script (the talk-with-demos version)
 FACILITATOR.md  run-of-show, timings, and where the traps are (for whoever is teaching)
 slides/         the deck

@@ -49,3 +49,23 @@ Within the aphasia group, correlations with WAB-AQ:
 Type-token ratio falls as transcripts get longer, and impaired speakers produce shorter
 transcripts. So TTR is fighting itself. It is a real, well-documented confound, and no AI
 assistant will mention it unless you ask.
+
+## recovery_prediction.csv — 90 synthetic acute-stroke participants
+
+This file supports the advanced Python notebook. Each row is one participant assessed
+in the acute phase. The outcome is `outcome_wab_aq_12m`, a synthetic 12-month WAB-AQ.
+The other variables are available at the acute assessment:
+
+| Column | Meaning |
+|---|---|
+| `acute_wab_aq` | acute WAB-AQ |
+| `acute_discourse_score` | synthetic acute narrative-discourse score (0–10) |
+| `lesion_volume_ml` | synthetic lesion volume in millilitres |
+| `cortical_lesion_pct` | synthetic cortical lesion burden (%) |
+| `dorsal_disconnection_pct` | synthetic dorsal-stream disconnection proportion |
+| `ventral_disconnection_pct` | synthetic ventral-stream disconnection proportion |
+
+The file is an exercise in prediction workflow: define predictors available at baseline,
+keep the 12-month outcome out of the predictor matrix, and evaluate models with resampling.
+It is not a clinical prediction model, a representation of a trial cohort, or evidence for
+any clinical association.

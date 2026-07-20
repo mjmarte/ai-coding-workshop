@@ -27,6 +27,9 @@ Any one of these. If you have none, make a free Claude account — it takes a mi
    facilitator sends you.
 3. Run the first cell. If it prints `Ready.` you are done.
 
+If the facilitator assigns the advanced recovery-prediction branch, they will provide a
+second Colab link during the session. You do not need to open it beforehand.
+
 Colab is a Python notebook that runs on Google's computers. Nothing is installed on
 yours. It's free.
 

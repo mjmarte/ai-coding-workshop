@@ -12,6 +12,10 @@ The AI assistant is a separate tab. Participants copy a prompt from Colab or RSt
 
 The data are synthetic. No participant should paste real patient data, transcripts, or identifiers into an AI tool.
 
+## Choose the route at minute 5
+
+Use the core route below when the room is new to AI-assisted coding. If most participants already use an AI assistant to write and run R or Python, use the experienced-room fast-track route in [ADVANCED_PATHS.md](ADVANCED_PATHS.md) instead. Both routes require an explicit check of model output before interpretation.
+
 ## Before participants arrive
 
 On the shared screen, have these tabs open in this order:
@@ -20,6 +24,8 @@ On the shared screen, have these tabs open in this order:
 2. the Colab starter notebook, with the setup cell already run and `Ready.` visible;
 3. your Posit permanent copy, with `r/02_r_starter.R` open;
 4. `PROMPTS.md` in the GitHub repository.
+
+If you might use the fast-track route, also open the advanced recovery-prediction Colab notebook.
 
 On your private second screen, open the Python and R solution files, this script, and a 60-minute timer. Do not share this screen.
 
@@ -36,6 +42,8 @@ Before the workshop, verify that `library(readr)`, `library(dplyr)`, `library(gg
 > Today is a working session. You will ask an AI assistant for code, run that code yourself, and compare the output against a stated checkpoint. We are using synthetic aphasia data, which is why it is appropriate to place these examples in an AI chat. The same workflow does not authorize placing real participant data, transcripts, or identifiers in a public tool.
 >
 > You should have three tabs open: an AI assistant, Colab, and Posit Cloud. The assistant writes or explains code. Colab runs Python. Posit runs R. Keep the same AI conversation open as we move through the tasks so that it retains the objects and decisions already established.
+>
+> Raise your hand if you have already used an AI assistant to write and run R or Python code for a research analysis. If that is most of the room, we will move quickly through the setup and use the advanced prediction example. If not, we will build the core workflow together.
 
 **DO:** Ask participants to show a neighbor or raise a hand once (i) Colab prints `Ready.`, and (ii) Posit shows `r/02_r_starter.R`. Give them two minutes. Help only with the first failing step: Colab setup cell, Posit permanent copy, or sign-in.
 

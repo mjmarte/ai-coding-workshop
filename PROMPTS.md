@@ -141,7 +141,7 @@ One sentence in the methods suffices. Retain the chat log.
 
 ## 7. Bad vs. good, side by side
 
-Three real cases from this workshop's dataset. Same question, same model, different
+Four real cases from this workshop's dataset. Same question, same model, different
 prompt. The gap is not phrasing — it's how much of your own knowledge you put in.
 
 **Case 1 — a two-group comparison**
@@ -164,6 +164,13 @@ prompt. The gap is not phrasing — it's how much of your own knowledge you put 
 |---|---|---|
 | Bad | *"Build a regression predicting severity from my language measures."* | A model with all predictors dumped in, no mention that two of them are collinear, no report of what happens to each one's p-value when the others are added. |
 | Good | *"Build a regression predicting severity from these language measures: [list]. Two of these (content-word ratio, word count) are likely correlated with each other. Report each predictor's p-value in the single-predictor model and in the full model side by side, so I can see if anything changes."* | The same fit, but with the vanishing-effect problem (§5 in `STATISTICS_GUARDRAILS.md`) visible in the output instead of buried in it. |
+
+**Case 4 — acute prediction of 12-month outcome**
+
+| | Prompt | What comes back |
+|---|---|---|
+| Bad | *"Use machine learning to predict 12-month WAB-AQ."* | A model that may use variables collected after the acute assessment, report training performance, or scale the full dataset before cross-validation. |
+| Good | *"I want to estimate 12-month WAB-AQ from variables available at the acute assessment only. Define the outcome and predictor sets before modeling. Compare a clinical baseline model with a clinical-plus-imaging model using repeated cross-validation; put imputation, scaling, and model fitting inside each resampling fold. Report MAE and R-squared with their fold-to-fold variability. Do not make clinical or causal claims from this development dataset."* | A time-bounded, leakage-safe evaluation with an interpretation matched to a development exercise rather than a clinical validation study. |
 
 **The pattern.** The AI has the statistical knowledge — it demonstrates that the moment
 you ask a follow-up (§3, §4 in `SCRIPT.md`). It does not spend that knowledge unless
